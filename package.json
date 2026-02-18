@@ -1,6 +1,8 @@
 {
   "name": "c8y-codex-mcp",
   "version": "1.0.0",
+  "type": "module",
+  "packageManager": "pnpm@10.26.0",
   "description": "MCP mirror of the official Cumulocity Codex documentation",
   "scripts": {
     "build": "nitro build",
@@ -9,17 +11,8 @@
     "test": "vitest",
     "test:run": "vitest run",
     "lint": "eslint",
-    "lint:fix": "eslint --fix"
-  },
-  "devDependencies": {
-    "@rollup/plugin-wasm": "^6.2.2",
-    "@schplitt/eslint-config": "^1.3.1",
-    "@types/node": "^24.10.13",
-    "eslint": "^10.0.0",
-    "h3": "^1.15.4",
-    "nitropack": "^2.12.4",
-    "vitest": "^4.0.18"
-
+    "lint:fix": "eslint --fix",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@kreuzberg/html-to-markdown-wasm": "^2.25.1",
@@ -29,5 +22,14 @@
     "markdown-exit": "1.0.0-beta.8",
     "tmcp": "^1.19.2",
     "valibot": "^1.2.0"
+  },
+  "devDependencies": {
+    "@rollup/plugin-wasm": "^6.2.2",
+    "@schplitt/eslint-config": "^1.3.1",
+    "@types/node": "^24.10.13",
+    "eslint": "^10.0.0",
+    "h3": "^1.15.5",
+    "nitropack": "^2.13.1",
+    "vitest": "^4.0.18"
   }
 }
