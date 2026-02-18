@@ -1,0 +1,9 @@
+{
+	"servers": {
+		"local-c8y-docs-mcp": {
+			"url": "http://localhost:3000/mcp",
+			"type": "http"
+		}
+	},
+	"inputs": []
+}

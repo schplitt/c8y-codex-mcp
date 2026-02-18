@@ -1,0 +1,298 @@
+# Cumulocity Web SDK Codex
+
+This is the Codex for the Cumulocity Web SDK, which provides documentation and API references for the components and services available in the Cumulocity Web SDK.
+These are mainly offered by the @c8y/ngx-components package, which is the main package for building Cumulocity applications using Angular.
+
+
+## Advanced development
+Complete toolkit for advanced Cumulocity platform development including services, hooks, extensions, and sophisticated integration patterns.
+
+- [Advanced development](https://cumulocity.com/codex/advanced-development.md): Complete toolkit for advanced Cumulocity platform development including services, hooks, extensions, and sophisticated integration patterns.
+### Directives
+Custom HTML attribute directives for enhanced functionality
+
+- [Directives](https://cumulocity.com/codex/advanced-development/directives.md): Custom HTML attribute directives for enhanced functionality
+- [If allowed directive](https://cumulocity.com/codex/advanced-development/directives/if-allowed-directive.md)
+- [For of directive](https://cumulocity.com/codex/advanced-development/directives/for-of-directive.md)
+- [Icon directive](https://cumulocity.com/codex/advanced-development/directives/icon-directive.md)
+- [Outlet directive](https://cumulocity.com/codex/advanced-development/directives/outlet-directive.md)
+- [Text autoresize directive](https://cumulocity.com/codex/advanced-development/directives/text-autoresize-directive.md)
+- [Translate directive](https://cumulocity.com/codex/advanced-development/directives/translate-directive.md)
+
+### Extension points & hooks
+Extension points for dynamically extending applications using hooks, content projection, and services
+
+- [Extension points & hooks](https://cumulocity.com/codex/advanced-development/hooks.md): Extension points for dynamically extending applications using hooks, content projection, and services
+- [Action hook](https://cumulocity.com/codex/advanced-development/hooks/action-hook.md)
+- [Action bar hook](https://cumulocity.com/codex/advanced-development/hooks/action-bar-hook.md)
+- [Breadcrumbs hook](https://cumulocity.com/codex/advanced-development/hooks/breadcrumbs-hook.md)
+- [Computed property hook](https://cumulocity.com/codex/advanced-development/hooks/computed-property-hook.md)
+- [Docs hook](https://cumulocity.com/codex/advanced-development/hooks/docs-hook.md)
+- [Component hook](https://cumulocity.com/codex/advanced-development/hooks/component-hook.md)
+- [Navigator route hook](https://cumulocity.com/codex/advanced-development/hooks/navigator-route-hooks.md)
+- [Guide](https://cumulocity.com/codex/advanced-development/hooks/hooks-guide.md)
+- [Drawer hook](https://cumulocity.com/codex/advanced-development/hooks/drawer-hook.md)
+- [Preview features hook](https://cumulocity.com/codex/advanced-development/hooks/preview-features-hook.md)
+- [Pattern messages](https://cumulocity.com/codex/advanced-development/hooks/pattern-messages-hook.md)
+- [Query param bottom drawer](https://cumulocity.com/codex/advanced-development/hooks/query-param-bottom-drawer.md)
+- [Query param modal](https://cumulocity.com/codex/advanced-development/hooks/query-param-modal.md)
+- [Service hook](https://cumulocity.com/codex/advanced-development/hooks/service-hook.md)
+- [Tabs hook](https://cumulocity.com/codex/advanced-development/hooks/tabs-hook.md)
+- [Stepper hook](https://cumulocity.com/codex/advanced-development/hooks/stepper-hook.md)
+- [User menu hook](https://cumulocity.com/codex/advanced-development/hooks/user-menu-hook.md)
+- [Versions hook](https://cumulocity.com/codex/advanced-development/hooks/versions-hook.md)
+- [Widget config hook](https://cumulocity.com/codex/advanced-development/hooks/widget-config-hook.md)
+- [Widget hook](https://cumulocity.com/codex/advanced-development/hooks/widget-hook.md)
+- [Wizard hook](https://cumulocity.com/codex/advanced-development/hooks/wizard-hook.md)
+
+### Pipes
+Data transformation utilities for templates
+
+- [Pipes](https://cumulocity.com/codex/advanced-development/pipes.md): Data transformation utilities for templates
+- [Bytes pipe](https://cumulocity.com/codex/advanced-development/pipes/bytes-pipe.md)
+- [Date pipe](https://cumulocity.com/codex/advanced-development/pipes/date-pipe.md)
+- [File icon pipe](https://cumulocity.com/codex/advanced-development/pipes/file-icon-pipe.md)
+- [Humanize pipe](https://cumulocity.com/codex/advanced-development/pipes/humanize-pipe.md)
+- [Number pipe](https://cumulocity.com/codex/advanced-development/pipes/number-pipe.md)
+- [Markdown to HTML pipe](https://cumulocity.com/codex/advanced-development/pipes/markdown-to-html-pipe.md)
+- [Translate pipe](https://cumulocity.com/codex/advanced-development/pipes/translate-pipe.md)
+- [User name initials pipe](https://cumulocity.com/codex/advanced-development/pipes/user-name-initials-pipe.md)
+
+### Product experience
+Gainsight PX integration for user analytics and engagement tracking
+
+### Services
+Application services and APIs for advanced development
+
+- [Services](https://cumulocity.com/codex/advanced-development/services.md): Application services and APIs for advanced development
+- [Alert service](https://cumulocity.com/codex/advanced-development/services/alert-service.md)
+- [Api service](https://cumulocity.com/codex/advanced-development/services/api-service.md)
+- [App state service](https://cumulocity.com/codex/advanced-development/services/app-state-service.md)
+- [Data Explorer service](https://cumulocity.com/codex/advanced-development/services/data-explorer-service.md)
+- [Options service](https://cumulocity.com/codex/advanced-development/services/options-service.md)
+- [Realtime service](https://cumulocity.com/codex/advanced-development/services/realtime-service.md)
+- [Permissions service](https://cumulocity.com/codex/advanced-development/services/permissions-service.md)
+- [User preferences service](https://cumulocity.com/codex/advanced-development/services/user-preferences-service.md)
+- [Widget config service](https://cumulocity.com/codex/advanced-development/services/widget-config-service.md)
+
+- [Feature modules](https://cumulocity.com/codex/advanced-development/feature-modules.md)
+- [Microfrontends](https://cumulocity.com/codex/advanced-development/microfrontends.md)
+- [Overview](https://cumulocity.com/codex/advanced-development/overview.md)
+- [Schema loader](https://cumulocity.com/codex/advanced-development/schema-loader.md)
+
+## Common tasks
+Essential development tasks like creating custom widgets, tabs, and styling components
+
+- [Common tasks](https://cumulocity.com/codex/common-tasks.md): Essential development tasks like creating custom widgets, tabs, and styling components
+- [Custom tabs](https://cumulocity.com/codex/common-tasks/custom-tabs.md)
+- [Custom widgets](https://cumulocity.com/codex/common-tasks/custom-widgets.md)
+- [Application styles](https://cumulocity.com/codex/common-tasks/application-styles.md)
+- [Overview](https://cumulocity.com/codex/common-tasks/overview.md)
+- [Component styles](https://cumulocity.com/codex/common-tasks/component-styles.md)
+
+## Components
+UI component library for building user interfaces with consistent styling and functionality
+
+- [Components](https://cumulocity.com/codex/components.md): UI component library for building user interfaces with consistent styling and functionality
+### Application and system
+
+- [Application and system](https://cumulocity.com/codex/components/application-and-system.md)
+- [iframe](https://cumulocity.com/codex/components/application-and-system/iframe.md): Embedded frame component for displaying external content within Cumulocity applications with same-origin and cross-origin support
+- [Internationalization](https://cumulocity.com/codex/components/application-and-system/internationalization.md): System component for managing multi-language support and translations in Cumulocity applications with dynamic locale switching
+- [Login](https://cumulocity.com/codex/components/application-and-system/login.md): Authentication interface for Cumulocity platform login with session management and security features
+- [Setup](https://cumulocity.com/codex/components/application-and-system/setup.md): Initial configuration and setup wizard for Cumulocity applications and features with step-by-step guidance
+- [Provider configuration](https://cumulocity.com/codex/components/application-and-system/provider-configuration.md): Configuration interface for managing Cumulocity service providers and external system connections
+- [Title](https://cumulocity.com/codex/components/application-and-system/title.md): Page title component with Cumulocity branding that displays header titles and updates browser tab title
+
+### Data display and visualization
+
+- [Data display and visualization](https://cumulocity.com/codex/components/data-display-and-visualization.md)
+- [Application icon](https://cumulocity.com/codex/components/data-display-and-visualization/app-icon.md): Icon component representing Cumulocity applications with consistent styling and branding
+- [Application card](https://cumulocity.com/codex/components/data-display-and-visualization/application-card.md): Card display for Cumulocity application information with links, metadata, and launch actions
+- [Custom dashboard](https://cumulocity.com/codex/components/data-display-and-visualization/custom-dashboard.md): Configurable dashboard for displaying Cumulocity widgets and data visualizations with customization
+- [Context dashboard](https://cumulocity.com/codex/components/data-display-and-visualization/context-dashboard.md): Dashboard component that adapts to current Cumulocity context like selected device or asset
+- [Data grid](https://cumulocity.com/codex/components/data-display-and-visualization/data-grid.md): Advanced table component for displaying Cumulocity data with filtering, sorting, and pagination
+- [Device connection status](https://cumulocity.com/codex/components/data-display-and-visualization/device-connection-status.md): Visual indicator displaying current operational status of Cumulocity devices with color coding
+- [List display switch](https://cumulocity.com/codex/components/data-display-and-visualization/list-display-switch.md): Toggle between different visualization modes for Cumulocity data lists such as grid and table views
+- [List group](https://cumulocity.com/codex/components/data-display-and-visualization/list-group.md): Flexible list component for displaying series of related items with consistent styling and actions
+- [Icon panel](https://cumulocity.com/codex/components/data-display-and-visualization/icon-panel.md): Visual container displaying an icon with accompanying text or content for information display
+- [Dropdown](https://cumulocity.com/codex/components/data-display-and-visualization/dropdown.md): Menu component displaying list of options or actions triggered by a button or link
+- [Popover](https://cumulocity.com/codex/components/data-display-and-visualization/popover.md): Small overlay providing additional information or options when hovering or clicking an element
+- [Map](https://cumulocity.com/codex/components/data-display-and-visualization/map.md): Geographic visualization component for displaying Cumulocity device locations and spatial data
+- [Range display](https://cumulocity.com/codex/components/data-display-and-visualization/range-display.md): Visual representation of numeric ranges or value distribution with customizable styling
+- [Properties list](https://cumulocity.com/codex/components/data-display-and-visualization/properties-list.md): Structured display of Cumulocity object properties in key-value format with hierarchical support
+- [Tooltip](https://cumulocity.com/codex/components/data-display-and-visualization/tooltip.md): Small popup displaying helpful text when hovering over elements for additional context
+- [Table](https://cumulocity.com/codex/components/data-display-and-visualization/table.md): Data table component optimized for displaying Cumulocity platform data with built-in features
+
+### Data input
+
+- [Data input](https://cumulocity.com/codex/components/data-input.md)
+- [Alarm event selector](https://cumulocity.com/codex/components/data-input/alarm-event-selector.md): Specialized selector for choosing alarms and events from Cumulocity devices with filtering and search capabilities
+- [AI chat](https://cumulocity.com/codex/components/data-input/ai-chat.md): AI-powered chat interface for interacting with Cumulocity platform features and querying device data
+- [Asset properties](https://cumulocity.com/codex/components/data-input/asset-properties.md): Component for viewing and managing properties of Cumulocity assets and devices with editing capabilities
+- [Button group](https://cumulocity.com/codex/components/data-input/button-group.md): Groups multiple related buttons together in a single component with consistent spacing and layout options
+- [Asset selector](https://cumulocity.com/codex/components/data-input/asset-selector.md): Selection interface for choosing assets from Cumulocity asset hierarchy with tree navigation and search
+- [Button](https://cumulocity.com/codex/components/data-input/button.md): Interactive element for triggering actions with various styles, sizes, and states for forms, navigation, and in-page functionality
+- [Data point selector](https://cumulocity.com/codex/components/data-input/data-point-selector.md): Specialized interface for selecting measurement data points from Cumulocity devices with filtering and context support
+- [Quick link](https://cumulocity.com/codex/components/data-input/quick-link.md): Shortcut component for rapid access to frequently used Cumulocity features and pages with icon and label display
+- [Data points export selector](https://cumulocity.com/codex/components/data-input/data-points-export-selector.md): Tool for selecting and exporting Cumulocity data points to CSV or Excel formats for reporting and analysis
+- [Realtime button](https://cumulocity.com/codex/components/data-input/realtime-button.md): Control for toggling real-time data updates from Cumulocity platform with subscription management
+
+### Forms
+
+- [Forms](https://cumulocity.com/codex/components/forms.md)
+- [Checkboxes and radio buttons](https://cumulocity.com/codex/components/forms/checkboxes-and-radio-buttons.md): Form controls for single or multiple selections with checkboxes and radio buttons with customizable styling
+- [Drop area](https://cumulocity.com/codex/components/forms/drop-area.md): Drag-and-drop zone for file uploads or content arrangement with visual feedback
+- [Date and time](https://cumulocity.com/codex/components/forms/date-time.md): Input component for selecting dates and times with calendar picker interface and timezone support
+- [Editor](https://cumulocity.com/codex/components/forms/editor.md): Rich text editor for formatted content creation and editing with toolbar controls
+- [Extendable input list](https://cumulocity.com/codex/components/forms/extendable-input-list.md): Dynamic list allowing users to add, remove, and modify multiple input entries
+- [File picker](https://cumulocity.com/codex/components/forms/file-picker.md): Upload interface for selecting and managing files from user's system with drag-and-drop support
+- [Form group](https://cumulocity.com/codex/components/forms/form-group.md): Container component for organizing form fields with labels, validation messages, and help text
+- [Dynamic forms](https://cumulocity.com/codex/components/forms/dynamic-forms.md): Programmatically generated forms based on JSON schema or configuration for flexible form creation
+- [Form](https://cumulocity.com/codex/components/forms/form.md): Container and validation system for organizing multiple form inputs and controls with error handling
+- [Input fields](https://cumulocity.com/codex/components/forms/input-fields.md): Text input components for collecting various types of user data with validation and states
+- [Input groups](https://cumulocity.com/codex/components/forms/input-group.md): Combines input fields with buttons, icons, or text for enhanced form functionality
+- [Range input](https://cumulocity.com/codex/components/forms/range-input.md): Slider control for selecting numeric values within a defined range with visual feedback
+- [Select](https://cumulocity.com/codex/components/forms/select.md): Dropdown menu for selecting one or multiple options from a searchable list with filtering
+- [Textarea](https://cumulocity.com/codex/components/forms/textarea.md): Multi-line text input for collecting longer form text content with resize options
+- [Toggle switch](https://cumulocity.com/codex/components/forms/toggle-switch.md): Binary control for enabling or disabling features or settings with visual toggle state
+
+### Navigation and layout
+
+- [Navigation and layout](https://cumulocity.com/codex/components/navigation-and-layout.md)
+- [Action Bar](https://cumulocity.com/codex/components/navigation-and-layout/action-bar.md): Fixed bar containing primary actions and controls for current page or view
+- [Breadcrumb](https://cumulocity.com/codex/components/navigation-and-layout/breadcrumb.md): Navigation trail showing user's current location in application hierarchy
+- [Bottom drawer](https://cumulocity.com/codex/components/navigation-and-layout/bottom-drawer.md): Sliding panel from bottom of screen for additional content without leaving current view
+- [Card group](https://cumulocity.com/codex/components/navigation-and-layout/card-group.md): Organizes multiple cards in a responsive grid layout with consistent spacing
+- [Card Layouts](https://cumulocity.com/codex/components/navigation-and-layout/card-layouts.md): Pre-configured card arrangements for common layout patterns and use cases
+- [Collapse](https://cumulocity.com/codex/components/navigation-and-layout/collapse.md): Expandable and collapsible content section to save space and organize information
+- [Card](https://cumulocity.com/codex/components/navigation-and-layout/card.md): Container component for grouping related content with optional header, body, and footer sections
+- [Pagination](https://cumulocity.com/codex/components/navigation-and-layout/pagination.md): Navigation controls for browsing through multiple pages of content or data with page numbers
+- [Navigation System](https://cumulocity.com/codex/components/navigation-and-layout/navigation-system.md): Main navigation structure for Cumulocity application menu, routing, and user interface layout
+- [Resizable grid](https://cumulocity.com/codex/components/navigation-and-layout/resizable-grid.md): Flexible grid layout with user-adjustable column and row sizes for custom arrangements
+- [Scrollbar](https://cumulocity.com/codex/components/navigation-and-layout/scrollbar.md): Custom scrollbar component with consistent cross-browser appearance and styling
+- [Stepper](https://cumulocity.com/codex/components/navigation-and-layout/stepper.md): Multi-step process indicator guiding users through sequential workflow with progress tracking
+- [Tab](https://cumulocity.com/codex/components/navigation-and-layout/tab.md): Navigation component for switching between different views or content sections within same page
+- [Split view](https://cumulocity.com/codex/components/navigation-and-layout/split-view.md): Resizable panel layout dividing screen into multiple adjustable sections with draggable divider
+
+### Status, feedback, and notifications
+
+- [Status, feedback, and notifications](https://cumulocity.com/codex/components/status-feedback-and-notifications.md)
+- [Alert](https://cumulocity.com/codex/components/status-feedback-and-notifications/alert.md): Displays important messages and notifications with contextual styling for success, warning, error, and info states
+- [Badge](https://cumulocity.com/codex/components/status-feedback-and-notifications/badge.md): Small visual indicator displaying status, counts, or labels with various color schemes and sizes
+- [Countdown](https://cumulocity.com/codex/components/status-feedback-and-notifications/countdown.md): Timer component displaying remaining time until a specific event or deadline with customizable format
+- [Help](https://cumulocity.com/codex/components/status-feedback-and-notifications/help.md): Information and guidance component providing contextual help and documentation to users
+- [Empty state](https://cumulocity.com/codex/components/status-feedback-and-notifications/empty-state.md): Placeholder display when no data or content is available, often with helpful guidance or actions
+- [Loading](https://cumulocity.com/codex/components/status-feedback-and-notifications/c8y-loading.md): Visual indicator showing content or process is loading or in progress with spinner or skeleton
+- [Modal](https://cumulocity.com/codex/components/status-feedback-and-notifications/modal.md): Overlay dialog box for displaying focused content or collecting user input without page navigation
+- [Operation result](https://cumulocity.com/codex/components/status-feedback-and-notifications/operation-result.md): Displays results and status of Cumulocity device operations and commands with success or error states
+- [Pulse](https://cumulocity.com/codex/components/status-feedback-and-notifications/pulse.md): Animated indicator showing active or live status of features or data with pulsing effect
+- [Tag](https://cumulocity.com/codex/components/status-feedback-and-notifications/tag.md): Label component for categorizing, filtering, or highlighting items with removable options
+
+- [Overview](https://cumulocity.com/codex/components/overview.md)
+
+## Core concepts
+Fundamental components and architecture of the Cumulocity platform for developers
+
+- [Core concepts](https://cumulocity.com/codex/core-concepts.md): Fundamental components and architecture of the Cumulocity platform for developers
+- [Cumulocity platform for developers](https://cumulocity.com/codex/core-concepts/cumulocity-platform-for-developers.md)
+- [Overview](https://cumulocity.com/codex/core-concepts/overview.md)
+- [Security authentication](https://cumulocity.com/codex/core-concepts/security-authentication.md)
+- [Web SDK architecture](https://cumulocity.com/codex/core-concepts/web-sdk-architecture.md)
+
+## Design System
+Comprehensive design guidelines, components, and tokens for consistent user experiences.
+
+- [Design System](https://cumulocity.com/codex/design-system.md): Comprehensive design guidelines, components, and tokens for consistent user experiences.
+### CSS utilities
+
+- [CSS utilities](https://cumulocity.com/codex/design-system/css-utilities.md)
+- [Borders and separators](https://cumulocity.com/codex/design-system/css-utilities/borders-and-separators.md)
+- [Color](https://cumulocity.com/codex/design-system/css-utilities/color.md)
+- [Display visibility](https://cumulocity.com/codex/design-system/css-utilities/display-visibility.md)
+- [Element queries](https://cumulocity.com/codex/design-system/css-utilities/element-queries.md)
+- [Elevation](https://cumulocity.com/codex/design-system/css-utilities/elevation.md)
+- [Flex containers](https://cumulocity.com/codex/design-system/css-utilities/flex-containers.md)
+- [Flex items](https://cumulocity.com/codex/design-system/css-utilities/flex-items.md)
+- [Margin and padding](https://cumulocity.com/codex/design-system/css-utilities/margin-padding.md)
+- [Grid containers](https://cumulocity.com/codex/design-system/css-utilities/grid-containers.md)
+- [Motion](https://cumulocity.com/codex/design-system/css-utilities/motion.md)
+- [Position](https://cumulocity.com/codex/design-system/css-utilities/position.md)
+- [Text](https://cumulocity.com/codex/design-system/css-utilities/text.md)
+- [Using the grid](https://cumulocity.com/codex/design-system/css-utilities/using-the-grid.md)
+
+### Design tokens
+This section covers the foundational design principles and elements that underpin the Cumulocity UI. These foundations ensure a consistent, cohesive, and intuitive user experience across all Cumulocity applications, whether they are built-in or custom-developed using the Web SDK.
+
+- [Design tokens](https://cumulocity.com/codex/design-system/design-tokens.md): This section covers the foundational design principles and elements that underpin the Cumulocity UI. These foundations ensure a consistent, cohesive, and intuitive user experience across all Cumulocity applications, whether they are built-in or custom-developed using the Web SDK.
+#### Component tokens
+
+- [Component tokens](https://cumulocity.com/codex/design-system/design-tokens/components.md)
+- [Button tokens](https://cumulocity.com/codex/design-system/design-tokens/components/buttons-tokens.md)
+- [Content component tokens](https://cumulocity.com/codex/design-system/design-tokens/components/content-tokens.md)
+- [Form tokens](https://cumulocity.com/codex/design-system/design-tokens/components/forms-tokens.md)
+- [Navigation tokens](https://cumulocity.com/codex/design-system/design-tokens/components/navigation-tokens.md)
+- [Overlay tokens](https://cumulocity.com/codex/design-system/design-tokens/components/overlays-tokens.md)
+- [Root component tokens](https://cumulocity.com/codex/design-system/design-tokens/components/root-tokens.md)
+
+- [Branding tokens](https://cumulocity.com/codex/design-system/design-tokens/branding-tokens.md)
+- [Application tokens](https://cumulocity.com/codex/design-system/design-tokens/application-tokens.md)
+- [Color tokens](https://cumulocity.com/codex/design-system/design-tokens/color-tokens.md)
+- [Components tokens](https://cumulocity.com/codex/design-system/design-tokens/components-tokens.md)
+
+### Foundations
+This section covers the foundational design principles and elements that underpin the Cumulocity UI. These foundations ensure a consistent, cohesive, and intuitive user experience across all Cumulocity applications, whether they are built-in or custom-developed using the Web SDK.
+
+- [Foundations](https://cumulocity.com/codex/design-system/foundations.md): This section covers the foundational design principles and elements that underpin the Cumulocity UI. These foundations ensure a consistent, cohesive, and intuitive user experience across all Cumulocity applications, whether they are built-in or custom-developed using the Web SDK.
+- [Elevation](https://cumulocity.com/codex/design-system/foundations/elevation.md)
+- [Grid and vertical rhythm](https://cumulocity.com/codex/design-system/foundations/grid-and-vertical-rhythm.md)
+- [Motion](https://cumulocity.com/codex/design-system/foundations/motion.md)
+- [Typography](https://cumulocity.com/codex/design-system/foundations/typography.md)
+
+### Patterns
+This section describes common interaction patterns and how to apply them consistently across Cumulocity applications.
+
+- [Patterns](https://cumulocity.com/codex/design-system/patterns.md): This section describes common interaction patterns and how to apply them consistently across Cumulocity applications.
+- [Data actions](https://cumulocity.com/codex/design-system/patterns/data-actions.md)
+- [Data display](https://cumulocity.com/codex/design-system/patterns/data-display.md)
+- [Feedback](https://cumulocity.com/codex/design-system/patterns/feedback-patterns.md)
+- [Help and guidance](https://cumulocity.com/codex/design-system/patterns/help-and-guidance.md)
+- [Responsive design](https://cumulocity.com/codex/design-system/patterns/responsive-design.md)
+
+- [Accessibility](https://cumulocity.com/codex/design-system/accessibility.md)
+- [Icons](https://cumulocity.com/codex/design-system/icons.md): Featuring Cumulocity's custom icons and Delite icon font.
+- [Design system overview](https://cumulocity.com/codex/design-system/overview.md)
+- [Layout patterns](https://cumulocity.com/codex/design-system/layout-patterns.md)
+- [Styling guidelines](https://cumulocity.com/codex/design-system/styling-guidelines.md)
+- [Writing](https://cumulocity.com/codex/design-system/writing.md)
+
+## Migration guides
+Instructions and tips for migrating applications between different versions of the Web SDK.
+
+- [Migration guides](https://cumulocity.com/codex/migration-guides.md): Instructions and tips for migrating applications between different versions of the Web SDK.
+- [Migrating to ng-cli](https://cumulocity.com/codex/migration-guides/migration-to-ng-cli.md)
+- [Overview](https://cumulocity.com/codex/migration-guides/overview.md)
+- [Updating the Web SDK version](https://cumulocity.com/codex/migration-guides/updating-web-sdk-version.md)
+- [Upgrading to Web SDK 1018](https://cumulocity.com/codex/migration-guides/updating-web-sdk-version/1018/overview)
+- [Upgrading to Web SDK 1019](https://cumulocity.com/codex/migration-guides/updating-web-sdk-version/1019/overview)
+- [Upgrading to Web SDK 1020](https://cumulocity.com/codex/migration-guides/updating-web-sdk-version/1020/overview)
+- [Upgrading to Web SDK 1021](https://cumulocity.com/codex/migration-guides/updating-web-sdk-version/1021/overview)
+- [Upgrading to Web SDK 1022](https://cumulocity.com/codex/migration-guides/updating-web-sdk-version/1022/overview)
+- [Upgrading to Web SDK 1023](https://cumulocity.com/codex/migration-guides/updating-web-sdk-version/1023/overview)
+
+## Quick start
+Get up and running with Cumulocity Web SDK in minutes
+
+- [Quick start](https://cumulocity.com/codex/quick-start.md): Get up and running with Cumulocity Web SDK in minutes
+- [Installation setup](https://cumulocity.com/codex/quick-start/installation-setup.md)
+- [Overview](https://cumulocity.com/codex/quick-start/overview.md)
+- [Your first application](https://cumulocity.com/codex/quick-start/your-first-application.md)
+
+## Resources
+Helpful links and references for developers, including community forums and troubleshooting FAQs.
+
+- [Resources](https://cumulocity.com/codex/resources.md): Helpful links and references for developers, including community forums and troubleshooting FAQs.
+- [Community & support](https://cumulocity.com/codex/resources/community-support.md)
+- [License](https://cumulocity.com/codex/resources/license.md)
+- [Overview](https://cumulocity.com/codex/resources/overview.md)
+- [Troubleshooting and FAQ](https://cumulocity.com/codex/resources/troubleshooting-faq.md)

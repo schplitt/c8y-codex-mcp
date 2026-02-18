@@ -1,0 +1,22 @@
+{
+  "name": "c8y-docs-mcp",
+  "private": true,
+  "scripts": {
+    "build": "nitro build",
+    "dev": "nitro dev",
+    "preview": "node .output/server/index.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.13",
+    "h3": "^1.15.4",
+    "nitropack": "^2.12.4"
+  },
+  "dependencies": {
+    "@tmcp/adapter-valibot": "^0.1.5",
+    "@tmcp/transport-http": "^0.8.4",
+    "markdown-exit": "1.0.0-beta.8",
+    "tmcp": "^1.19.2",
+    "valibot": "^1.2.0",
+    "vitest": "^4.0.18"
+  }
+}
