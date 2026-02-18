@@ -6,10 +6,10 @@ This project is intentionally minimal.
 
 Primary goal:
 
-- run a workflow that ingests specific documentation
-- transform it into an MCP-ready JSON snapshot
-- commit/publish that JSON to a separate repository used by an MCP server
-- let the MCP server dynamically serve relevant documentation parts from that JSON
+- fetch Cumulocity Codex `llms.txt`
+- parse it into a compact structure model
+- enrich linked documentation into a deduplicated snapshot
+- expose MCP tools that let an LLM discover section names and request only needed content
 
 It parses codex markdown/txt into a typed document model with:
 
@@ -29,31 +29,36 @@ It parses codex markdown/txt into a typed document model with:
   - repeated links share one in-flight/completed fetch
   - all fetched docs are stored once in `documents[url]` with status metadata
 
+Additionally:
+
+- enrichment first tries to detect whether fetched content is HTML
+- if detected as HTML, it tries to parse/convert it to Markdown using `@kreuzberg/html-to-markdown`
+- conversion is best-effort (`try/catch`); fallback is raw fetched text
+- after normalization, single-character Hugo placeholders in the form `{{'<one-char>'}}` are replaced with their literal character
+- only one-character placeholders are replaced; multi-character placeholders are preserved
+
 ## Architecture
 
 ```
-src/
-├── c8y/
-│   ├── index.ts           # C8Y parse/enrich public entry
-│   ├── parse.ts           # Markdown parsing into typed section model
-│   ├── enrich.ts          # Linked markdown fetch + Promise cache snapshot builder
-│   ├── resolve.ts         # Section/subsection content resolution from snapshot
-│   └── types.ts           # Shared types + snapshot types
-├── workflow/
-│   ├── index.ts           # Workflow entrypoint + runtime config
-│   ├── snapshot.ts        # Snapshot JSON generation + retry policy
-│   ├── github.ts          # Octokit PR update/create sync logic
-│   └── types.ts           # Workflow payload and result types
-└── index.ts               # Root package entry point
+server/
+├── routes/
+│   ├── index.ts           # Basic Nitro root route
+│   └── mcp.ts             # MCP HTTP endpoint route
+└── utils/
+    ├── c8y/
+    │   ├── index.ts       # Fetch + parse + enrich entry + cached context
+    │   ├── parse.ts       # Markdown parsing into typed section model
+    │   ├── enrich.ts      # Linked doc fetch + Promise cache + HTML→Markdown normalization
+    │   ├── resolve.ts     # Section/subsection content resolution from snapshot
+    │   └── types.ts       # Shared types + snapshot types
+    └── mcp/
+        └── index.ts       # MCP server + tool definitions
 tests/
-├── unit/
-│   ├── llms-parser.test.ts
-│   └── snapshots/
-│       └── llms.txt
-├── workers/
-│   └── index.spec.ts
-├── vitest.unit.config.ts
-└── vitest.workers.config.ts
+├── llms-parser.test.ts
+├── enrich-html-conversion.test.ts
+└── snapshots/
+  ├── llms.txt
+  └── html.html
 ```
 
 ### Parsing
@@ -66,39 +71,34 @@ tests/
 - Store fetch failures as status metadata in `documents[url]` (non-fail-hard).
 - Keep output shape simple and stable for MCP-style consumption.
 
-### Tests (tests/)
+### MCP Tools
 
-- Uses Vitest for testing
-- Unit tests are in `tests/unit/**` and worker tests are in `tests/workers/**`
-- Use Vitest projects from root `vitest.config.ts`
-- Worker tests must use Cloudflare's workers project config so `cloudflare:test` resolves at runtime
+- `list-codex-documentation`
+- `get-codex-documentations`
+- `search-documentation-sections` (fuzzy match on section title/description; names only)
+- `list-documentation-sections` (requested sections; optional subsections per section)
 
-### Vitest Projects Setup
+### Runtime
 
-- Keep root `vitest.config.ts` as the single test entry point.
-- Configure two projects:
-  - Node/unit project from `tests/vitest.unit.config.ts`
-  - Cloudflare workers project from `tests/vitest.workers.config.ts`
-- In projects mode, prefer `defineWorkersProject` for workers-specific config.
-- Keep `test` and `test:run` scripts pointing to the root config only.
+- Nitro server with `srcDir: "server"`
+- MCP endpoint served at route `server/routes/mcp.ts`
+- Codex context cached with Nitro `defineCachedFunction`
 
 ## Development
 
 ```sh
 pnpm install    # Install dependencies
-pnpm test:run   # Run tests
-pnpm build      # Build with tsdown
-pnpm lint       # Lint with ESLint
-pnpm lint:fix   # Lint and auto-fix
-pnpm typecheck  # TypeScript type checking
+pnpm dev        # Run Nitro dev server
+pnpm build      # Build Nitro server
+pnpm preview    # Preview production build
+pnpm vitest run # Run tests once
 ```
 
 ## Code Style
 
 - ESM only (`"type": "module"`)
 - TypeScript strict mode enabled
-- Uses `tsdown` for building
-- Uses `@schplitt/eslint-config` for linting
+- Uses Nitro for building/runtime
 - Uses `vitest` for testing
 
 ## Cloudflare Workers
@@ -146,8 +146,8 @@ Retrieve API references and limits from the product docs:
 
 - Write tests in the `tests/` directory
 - Use `*.test.ts` file naming convention
-- Run `pnpm test:run` for running tests
-- Import modules from `../src`
+- Run `pnpm vitest run` for running tests
+- Import modules from `../server/utils/...`
 
 Example test structure:
 
@@ -187,11 +187,11 @@ When making changes to the project:
 
 When working on this project:
 
-1. **Run tests** after making changes: `pnpm test:run` (runs once, no watch mode)
-2. **Run linting** to ensure code quality: `pnpm lint`
-3. **Run type checking** before committing: `pnpm typecheck`
+1. **Run tests** after making changes: `pnpm vitest run`
+2. **Run build** after making changes: `pnpm build`
+3. **Run type checking** before committing if configured separately in scripts
 4. **Update this file** when adding new modules, APIs, or changing architecture
-5. **Keep exports in `src/index.ts`** — all public API should be exported from the main entry point
+5. **Keep public server logic under `server/utils`** and routes under `server/routes`
 6. **Add tests** for new functionality in the `tests/` directory
 7. **Record learnings** — When the user corrects a mistake or provides context about how something should be done, add it to the "Project Context & Learnings" section below if it's a recurring pattern (not a one-time fix)
 8. **Notify documentation changes** — When updating `README.md` or `AGENTS.md`, explicitly call out the changes to the user at the end of your response so they can review and don't overlook them
@@ -208,12 +208,14 @@ This section captures project-specific knowledge, tool quirks, and lessons learn
 
 ### Patterns & Conventions
 
-- Keep `src/index.ts` as the single public entry point.
-- Keep parser, enrichment, resolver, and workflow logic in separate focused modules.
+- Keep parser, enrichment, resolver, and MCP tool logic in separate focused modules.
 - Keep data model minimal: structure graph + deduplicated `documents[url]` store.
-- Keep test/project configs under `tests/` to avoid root clutter, while root `vitest.config.ts` remains the single entry.
-- Keep workflow repo target/marker/source settings configurable via env vars with safe defaults in `wrangler.jsonc`.
-- Keep PR ownership detection based on both title marker and branch prefix (not actor identity).
+- Keep MCP tool outputs simple text/markdown with deterministic behavior.
+- Keep `search-documentation-sections` returning section names only (no content), so callers can request content in a follow-up step.
+- For `list-documentation-sections`, require at least one section and treat missing/empty subsection lists as "all subsections".
+- Keep HTML-to-Markdown conversion best-effort in enrichment; never fail the fetch pipeline because conversion fails.
+- Keep coverage for HTML normalization with fixture-based tests so HTML detection and conversion behavior stays stable.
+- Keep Hugo placeholder replacement strict: match and replace only `{{'<one-char>'}}` placeholders.
 
 ### Common Mistakes to Avoid
 

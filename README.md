@@ -1,101 +1,65 @@
-# linkExtractionAndFetching
+# c8y-docs-mcp
 
-Minimal utility that fetches Cumulocity Codex `llms.txt`, parses it, builds a deduplicated markdown document store, and returns a snapshot for section/subsection resolution.
+Unofficial MCP server for Cumulocity Codex documentation.
 
-## Workflow purpose
+This project fetches and parses Codex `llms.txt`, enriches linked docs into a deduplicated snapshot, and exposes MCP tools so an LLM can discover and request relevant documentation content.
 
-This project is used in an automation workflow that:
+## What this project does
 
-1. Ingests specific documentation sources.
-2. Transforms them into an MCP-ready JSON snapshot.
-3. Commits/publishes that JSON to a separate repository used by an MCP server.
-4. Lets that MCP server dynamically serve relevant parts of the documentation from the JSON snapshot.
+1. Fetches `https://cumulocity.com/codex/llms.txt`.
+2. Parses document structure (`#`, `##`, `###`) and `.md` links.
+3. Fetches linked markdown docs with deduplication via a promise cache.
+4. Normalizes fetched content:
+  - first, it tries to detect whether fetched content is HTML
+  - if detected as HTML, it tries to parse/convert it to Markdown via `@kreuzberg/html-to-markdown`
+  - conversion is wrapped in `try/catch`; if detection or conversion is not successful, raw text is kept
+  - after normalization, single-character Hugo placeholders in the form `{{'<one-char>'}}` are replaced with the literal character
+  - only one-character placeholders are replaced; multi-character placeholders are preserved
+5. Serves the resulting context through MCP tools.
 
-## Daily workflow automation
+## MCP endpoint
 
-This Worker uses Cloudflare Workflows plus a cron trigger:
+- Route: `GET/POST /mcp` (handled by TMCP HTTP transport)
 
-- Cron: `0 12 * * *` (12:00 UTC every day)
-- Trigger path: `scheduled` handler creates a Workflow instance
-- Workflow class: `DocsSyncWorkflow`
+The root route `GET /` is currently Nitro’s default starter page.
 
-Workflow behavior:
+## MCP tools
 
-1. Generate the snapshot JSON.
-2. Retry snapshot generation up to 3 times.
-3. Abort run if snapshot creation still fails.
-4. For each target repo, attempt PR sync once (no retries for that step).
-5. If a managed PR exists (marker + branch prefix), update it; otherwise create one.
+- `list-codex-documentation`
+  - Lists all sections/subsections with titles, descriptions, and links.
 
-### Managed PR identity
+- `get-codex-documentations`
+  - Input: `urls: string[]`
+  - Returns full stored content (or fetch-status error details) for each URL.
 
-- Title marker: `[auto-c8y-docs]`
-- Branch prefix: `auto-c8y-docs-workflow`
+- `search-documentation-sections`
+  - Input: `patterns: string[]`, optional `limitPerPattern` (1–25, default 8)
+  - Uses `fuse.js` fuzzy search over section title + description.
+  - Returns matching section names only (no content), including per-pattern groupings.
 
-Both are used to identify workflow-owned open PRs.
+- `list-documentation-sections`
+  - Input: `sections: { title: string; subsections?: string[] }[]`
+  - Requires at least one section.
+  - If `subsections` is omitted/empty for a section, all subsections for that section are returned.
+  - Returns only requested section/subsection content.
 
-## Worker endpoints
+## Data model
 
-- `GET /` → health/status text.
-- `POST /run` → manually start a workflow instance immediately.
-- `GET /?instanceId=<id>` → query workflow instance status.
+Snapshot shape:
 
-## Configuration
-
-### Required secret
-
-- `GITHUB_TOKEN`: token used by Octokit to update/create PRs.
-
-Dashboard path: Worker -> Settings -> Variables and Secrets -> Secrets.
-
-Set it with Wrangler:
-
-```sh
-pnpm wrangler secret put GITHUB_TOKEN
-```
-
-### Constants in code
-
-Repository target, branch, JSON file path, PR marker, and branch prefix are constants in [src/workflow/index.ts](src/workflow/index.ts).
-
-## Trying repo updates locally
-
-1. Set `GITHUB_TOKEN` for your local/dev environment.
-2. Set target repo vars in `wrangler.jsonc`.
-3. Run `pnpm dev`.
-4. Trigger a run: `curl -X POST http://localhost:8787/run`.
-5. Copy `instanceId` from response.
-6. Check status: `curl "http://localhost:8787/?instanceId=<id>"`.
-7. Confirm PR was updated/created in target repo.
-
-## Output shape
-
-The snapshot contains:
-
-- `title` (document `#` heading)
-- `description` (first paragraph after `#`)
-- `sections[]` from `##` headings
+- `meta`: `builtAt`, `sourceUrl`
+- `structure`
   - `title`
-  - `description` (first paragraph after `##` and before first `###`)
-  - `links[]` extracted from bullet lists in that `##` block
+  - `description`
+  - `sections[]`
     - `title`
-    - `url` (only `.md` links)
-  - `subsections[]` from `###` headings
-    - `title`
-    - `description` (first paragraph after `###`)
-    - `links[]` extracted from bullet lists in that `###` block
+    - `description`
+    - `links[]` (`title`, `url`)
+    - `subsections[]`
       - `title`
-      - `url` (only `.md` links)
-
-Sections/subsections with no `.md` links are pruned.
-
-`####` and deeper headings do not create new structure levels; their list links are folded into the current `###` subsection.
-
-The returned snapshot object includes:
-
-- `meta` (`builtAt`, `sourceUrl`)
-- `structure` (document/sections/subsections/links)
-- `documents[url]`:
+      - `description`
+      - `links[]` (`title`, `url`)
+- `documents[url]`
   - `ok`
   - `content`
   - `statusCode`
@@ -103,44 +67,53 @@ The returned snapshot object includes:
   - `fetchedAt`
   - `error`
 
-## API
+Parsing behavior:
 
-- `fetchParseAndEnrichCodexLlms(sourceUrl?, parseOptions?)`
+- Keeps only `.md` links.
+- Prunes sections/subsections without `.md` links.
+- Treats `####+` headings as content within the active `###` subsection.
+- Resolves codex-relative links (`#/...`) against codex root.
 
-This is the single public entry from `src/index.ts` and returns structure + documents snapshot in one call.
+## Project structure
 
-Internal helpers used by tests/MCP layer:
+```text
+server/
+  routes/
+    index.ts
+    mcp.ts
+  utils/
+    c8y/
+      index.ts
+      parse.ts
+      enrich.ts
+      resolve.ts
+      types.ts
+    mcp/
+      index.ts
+tests/
+  llms-parser.test.ts
+  enrich-html-conversion.test.ts
+  snapshots/
+    llms.txt
+    html.html
+```
 
-- `parseCodexLlmsMarkdown(...)`
-- `enrichCodexDocumentWithLinkedMarkdown(...)`
-- `resolveSectionMarkdown(snapshot, sectionTitle)`
-- `resolveSubsectionMarkdown(snapshot, sectionTitle, subsectionTitle)`
-
-Default source URL:
-
-- `https://cumulocity.com/codex/llms.txt`
-
-## Notes
-
-- Uses `markdown-exit` token parsing.
-- Resolves codex-relative links (including `#/...`) against codex root.
-- Uses Promise-cache deduplication (`Map<link, Promise<DocumentEntry>>`) internally during enrichment.
-- Keeps fetch failures in `documents[url]` status metadata instead of throwing.
-- Keeps parsing rules intentionally minimal and deterministic.
-
-## Development
+## Local development
 
 ```sh
 pnpm install
-pnpm test:run
-pnpm lint
-pnpm typecheck
+pnpm dev
 ```
 
-## Testing
+Build production output:
 
-- `pnpm test` runs Vitest in watch mode via the root `vitest.config.ts`.
-- `pnpm test:run` runs once (non-watch) via the same root config.
-- The root config uses Vitest projects:
-  - `tests/vitest.unit.config.ts` for Node/unit tests (`tests/unit/**`)
-  - `tests/vitest.workers.config.ts` for Cloudflare Workers tests (`tests/workers/**`)
+```sh
+pnpm build
+pnpm preview
+```
+
+Run tests directly with Vitest:
+
+```sh
+pnpm vitest run
+```
