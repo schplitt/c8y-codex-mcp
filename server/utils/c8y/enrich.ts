@@ -1,4 +1,4 @@
-import { convert, initWasm, wasmReady } from '@kreuzberg/html-to-markdown-wasm';
+import { convert, initWasm, wasmReady } from '@kreuzberg/html-to-markdown-wasm'
 
 import type {
   CodexSnapshot,
@@ -99,8 +99,7 @@ function collectAllLinks(document: ParsedCodexDocument): string[] {
 }
 
 // wait for WASM to be ready
-const ready = wasmReady ?? initWasm();
-
+const ready = wasmReady ?? initWasm()
 
 async function normalizeFetchedContent(content: string): Promise<string> {
   let normalizedContent = content

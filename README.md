@@ -2,7 +2,7 @@
 
 Unofficial MCP server for Cumulocity Codex documentation.
 
-This project is a mirror of the official Codex docs at https://cumulocity.com/codex.
+This project is a mirror of the official Codex docs at <https://cumulocity.com/codex>.
 
 This project fetches and parses Codex `llms.txt`, enriches linked docs into a deduplicated snapshot, and exposes MCP tools so an LLM can discover and request relevant documentation content.
 
@@ -12,11 +12,13 @@ This project fetches and parses Codex `llms.txt`, enriches linked docs into a de
 2. Parses document structure (`#`, `##`, `###`) and `.md` links.
 3. Fetches linked markdown docs with deduplication via a promise cache.
 4. Normalizes fetched content:
-  - first, it tries to detect whether fetched content is HTML
-  - if detected as HTML, it tries to parse/convert it to Markdown via `@kreuzberg/html-to-markdown-wasm`
-  - conversion is wrapped in `try/catch`; if detection or conversion is not successful, raw text is kept
-  - after normalization, single-character Hugo placeholders in the form `{{'<one-char>'}}` are replaced with the literal character
-  - only one-character placeholders are replaced; multi-character placeholders are preserved
+
+- first, it tries to detect whether fetched content is HTML
+- if detected as HTML, it tries to parse/convert it to Markdown via `@kreuzberg/html-to-markdown-wasm`
+- conversion is wrapped in `try/catch`; if detection or conversion is not successful, raw text is kept
+- after normalization, single-character Hugo placeholders in the form `{{'<one-char>'}}` are replaced with the literal character
+- only one-character placeholders are replaced; multi-character placeholders are preserved
+
 5. Serves the resulting context through MCP tools.
 
 ## MCP endpoint
