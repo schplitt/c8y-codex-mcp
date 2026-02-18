@@ -1,4 +1,5 @@
-import { convert } from '@kreuzberg/html-to-markdown'
+import { convert, initWasm, wasmReady } from '@kreuzberg/html-to-markdown-wasm';
+
 import type {
   CodexSnapshot,
   DocumentEntry,
@@ -40,7 +41,7 @@ export async function enrichCodexDocumentWithLinkedMarkdown(
 
         return {
           ok: true,
-          content: normalizeFetchedContent(await response.text()),
+          content: await normalizeFetchedContent(await response.text()),
           statusCode: response.status,
           statusText: response.statusText || null,
           fetchedAt,
@@ -97,7 +98,11 @@ function collectAllLinks(document: ParsedCodexDocument): string[] {
   return [...allLinks]
 }
 
-function normalizeFetchedContent(content: string): string {
+// wait for WASM to be ready
+const ready = wasmReady ?? initWasm();
+
+
+async function normalizeFetchedContent(content: string): Promise<string> {
   let normalizedContent = content
 
   if (!looksLikeHtml(content)) {
@@ -105,9 +110,8 @@ function normalizeFetchedContent(content: string): string {
   }
 
   try {
-    const markdown = convert(content, {
-      extractMetadata: false
-    })
+    await ready
+    const markdown = convert(content)
     normalizedContent = markdown || content
   } catch {
     normalizedContent = content

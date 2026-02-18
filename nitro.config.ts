@@ -1,9 +1,14 @@
+import { wasm } from '@rollup/plugin-wasm';
 import { defineNitroConfig } from "nitropack/config"
 // https://nitro.build/config
 export default defineNitroConfig({
   compatibilityDate: "latest",
   srcDir: "server",
+  preset: "cloudflare_module",
   imports: false,
+  rollupConfig: {
+    plugins: [wasm()]
+  },
   storage: {
     cache: {
       driver: "cloudflare-kv-binding",

@@ -11,7 +11,7 @@ This project fetches and parses Codex `llms.txt`, enriches linked docs into a de
 3. Fetches linked markdown docs with deduplication via a promise cache.
 4. Normalizes fetched content:
   - first, it tries to detect whether fetched content is HTML
-  - if detected as HTML, it tries to parse/convert it to Markdown via `@kreuzberg/html-to-markdown`
+  - if detected as HTML, it tries to parse/convert it to Markdown via `@kreuzberg/html-to-markdown-wasm`
   - conversion is wrapped in `try/catch`; if detection or conversion is not successful, raw text is kept
   - after normalization, single-character Hugo placeholders in the form `{{'<one-char>'}}` are replaced with the literal character
   - only one-character placeholders are replaced; multi-character placeholders are preserved

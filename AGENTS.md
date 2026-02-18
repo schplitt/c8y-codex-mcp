@@ -32,7 +32,7 @@ It parses codex markdown/txt into a typed document model with:
 Additionally:
 
 - enrichment first tries to detect whether fetched content is HTML
-- if detected as HTML, it tries to parse/convert it to Markdown using `@kreuzberg/html-to-markdown`
+- if detected as HTML, it tries to parse/convert it to Markdown using `@kreuzberg/html-to-markdown-wasm`
 - conversion is best-effort (`try/catch`); fallback is raw fetched text
 - after normalization, single-character Hugo placeholders in the form `{{'<one-char>'}}` are replaced with their literal character
 - only one-character placeholders are replaced; multi-character placeholders are preserved
