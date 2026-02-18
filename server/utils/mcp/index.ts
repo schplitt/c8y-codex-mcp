@@ -27,9 +27,9 @@ const server = new McpServer(
 // Define a tool with type-safe schema
 server.tool(
   {
-    name: 'list-codex-documentation',
-    description: 'List Codex documentation by section and subsection, including their title and description and their links.',
-    title: 'List Codex Documentation',
+    name: 'list-codex-index',
+    description: 'List the Codex documentation index (sections and subsections) with titles, descriptions, and links.',
+    title: 'List Codex Index',
     annotations: {
       idempotentHint: true,
       readOnlyHint: true,
@@ -55,9 +55,9 @@ server.tool(
 )
 
 server.tool({
-  name: 'get-codex-documentations',
-  description: 'Get the full content of Codex documentation documents by their URL.',
-  title: 'Get Codex Documentations',
+  name: 'get-codex-documents',
+  description: 'Get full stored document content by one or more Codex document URLs.',
+  title: 'Get Codex Documents',
   annotations: {
     idempotentHint: true,
     readOnlyHint: true,
@@ -89,9 +89,9 @@ server.tool({
 })
 
 server.tool({
-  name: 'search-documentation-sections',
-  description: 'Fuzzy-search section title and description using one or more patterns and return matching section names only.',
-  title: 'Search Documentation Sections',
+  name: 'search-codex-sections',
+  description: 'Fuzzy-search Codex section titles and descriptions using one or more patterns and return section names only.',
+  title: 'Search Codex Sections',
   annotations: {
     idempotentHint: true,
     readOnlyHint: true,
@@ -147,9 +147,9 @@ server.tool({
 })
 
 server.tool({
-  name: 'list-documentation-sections',
-  description: 'Return content for requested Codex sections. At least one section is required. Subsections are optional per section; if omitted or empty, all subsections for that section are returned.',
-  title: 'List Documentation Sections',
+  name: 'get-codex-sections',
+  description: 'Return content for requested Codex sections by title. At least one section is required. Subsections are optional per section; if omitted or empty, all subsections for that section are returned.',
+  title: 'Get Codex Sections',
   annotations: {
     idempotentHint: true,
     readOnlyHint: true,

@@ -18,10 +18,10 @@ The server:
 
 ## MCP tools
 
-- **list-codex-documentation** — List all sections/subsections with descriptions and links
-- **search-documentation-sections** — Fuzzy search sections by title/description (returns names only)
-- **list-documentation-sections** — Get content for specific sections and subsections
-- **get-codex-documentations** — Fetch full content for specified document URLs
+- **list-codex-index** — List the documentation index (sections/subsections, descriptions, links)
+- **search-codex-sections** — Fuzzy search section titles/descriptions (returns section names only)
+- **get-codex-sections** — Get section/subsection content by section title
+- **get-codex-documents** — Get full stored document content by document URL
 
 ## Local development
 

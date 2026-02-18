@@ -73,10 +73,10 @@ tests/
 
 ### MCP Tools
 
-- `list-codex-documentation`
-- `get-codex-documentations`
-- `search-documentation-sections` (fuzzy match on section title/description; names only)
-- `list-documentation-sections` (requested sections; optional subsections per section)
+- `list-codex-index`
+- `get-codex-documents`
+- `search-codex-sections` (fuzzy match on section title/description; names only)
+- `get-codex-sections` (requested sections; optional subsections per section)
 
 ### Runtime
 
@@ -109,16 +109,6 @@ pnpm vitest run # Run tests once
 
 - [Cloudflare Workers](https://developers.cloudflare.com/workers/)
 - [Model Context Protocol (MCP)](https://docs.mcp.cloudflare.com/mcp)
-
-### Commands
-
-| Command               | Purpose                   |
-| --------------------- | ------------------------- |
-| `npx wrangler dev`    | Local development         |
-| `npx wrangler deploy` | Deploy to Cloudflare      |
-| `npx wrangler types`  | Generate TypeScript types |
-
-Run `wrangler types` after changing bindings in `wrangler.jsonc`.
 
 ### Node.js Compatibility
 
@@ -211,8 +201,8 @@ This section captures project-specific knowledge, tool quirks, and lessons learn
 - Keep parser, enrichment, resolver, and MCP tool logic in separate focused modules.
 - Keep data model minimal: structure graph + deduplicated `documents[url]` store.
 - Keep MCP tool outputs simple text/markdown with deterministic behavior.
-- Keep `search-documentation-sections` returning section names only (no content), so callers can request content in a follow-up step.
-- For `list-documentation-sections`, require at least one section and treat missing/empty subsection lists as "all subsections".
+- Keep `search-codex-sections` returning section names only (no content), so callers can request content in a follow-up step.
+- For `get-codex-sections`, require at least one section and treat missing/empty subsection lists as "all subsections".
 - Keep HTML-to-Markdown conversion best-effort in enrichment; never fail the fetch pipeline because conversion fails.
 - Keep coverage for HTML normalization with fixture-based tests so HTML detection and conversion behavior stays stable.
 - Keep Hugo placeholder replacement strict: match and replace only `{{'<one-char>'}}` placeholders.
