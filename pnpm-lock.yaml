@@ -29,9 +29,6 @@ importers:
       valibot:
         specifier: ^1.2.0
         version: 1.2.0(typescript@5.9.3)
-      vitest:
-        specifier: ^4.0.18
-        version: 4.0.18(@types/node@24.10.13)(jiti@2.6.1)(terser@5.46.0)(yaml@2.8.2)
     devDependencies:
       '@rollup/plugin-wasm':
         specifier: ^6.2.2
@@ -51,6 +48,9 @@ importers:
       nitropack:
         specifier: ^2.12.4
         version: 2.13.1(encoding@0.1.13)
+      vitest:
+        specifier: ^4.0.18
+        version: 4.0.18(@types/node@24.10.13)(jiti@2.6.1)(terser@5.46.0)(yaml@2.8.2)
 
 packages:
 

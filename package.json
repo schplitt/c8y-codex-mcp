@@ -2,7 +2,6 @@
   "name": "c8y-codex-mcp",
   "version": "1.0.0",
   "description": "MCP mirror of the official Cumulocity Codex documentation",
-  "private": true,
   "scripts": {
     "build": "nitro build",
     "dev": "nitro dev",
@@ -18,7 +17,9 @@
     "@types/node": "^24.10.13",
     "eslint": "^10.0.0",
     "h3": "^1.15.4",
-    "nitropack": "^2.12.4"
+    "nitropack": "^2.12.4",
+    "vitest": "^4.0.18"
+
   },
   "dependencies": {
     "@kreuzberg/html-to-markdown-wasm": "^2.25.1",
@@ -27,7 +28,6 @@
     "fuse.js": "^7.1.0",
     "markdown-exit": "1.0.0-beta.8",
     "tmcp": "^1.19.2",
-    "valibot": "^1.2.0",
-    "vitest": "^4.0.18"
+    "valibot": "^1.2.0"
   }
 }
