@@ -15,6 +15,10 @@ export default defineNitroConfig({
       binding: "CACHE",
     }
   },
+  alias: {
+    "fs": "node:fs",
+    "path": "node:path",
+  },
   cloudflare: {
     deployConfig: true,
     nodeCompat: true,
@@ -23,12 +27,8 @@ export default defineNitroConfig({
       kv_namespaces: [
         {
           binding: "CACHE",
-          id: "4c5baf90254446f08fe2f88c15a00a76"
         }
       ],
-      compatibility_flags: [
-        "nodejs_compat"
-      ]
     }
   }
 });
