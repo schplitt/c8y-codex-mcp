@@ -2,7 +2,7 @@ import { wasm } from '@rollup/plugin-wasm';
 import { defineNitroConfig } from "nitropack/config"
 // https://nitro.build/config
 export default defineNitroConfig({
-  compatibilityDate: "latest",
+  compatibilityDate: "2026-01-01",
   srcDir: "server",
   preset: "cloudflare_module",
   imports: false,
