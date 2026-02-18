@@ -11,7 +11,8 @@
     "test": "vitest",
     "test:run": "vitest run",
     "lint": "eslint",
-    "lint:fix": "eslint --fix"
+    "lint:fix": "eslint --fix",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@kreuzberg/html-to-markdown-wasm": "^2.25.1",
