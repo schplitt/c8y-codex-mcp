@@ -125,6 +125,47 @@ describe('enrichCodexDocumentWithLinkedMarkdown', () => {
     expect(snapshot.documents[missingUrl]?.statusText).toBe('Not Found')
     expect(snapshot.documents[missingUrl]?.content).toBeNull()
   })
+
+  test('detects HTML documents and converts them to markdown-like content', async () => {
+    const htmlUrl = 'https://example.com/docs/design-system.md'
+    const htmlSnapshot = await readFile(join(__dirname, './snapshots/html.html'), 'utf8')
+
+    const parsed = {
+      title: 'Doc',
+      description: 'Root description',
+      sections: [
+        {
+          title: 'Design system',
+          description: 'Section description',
+          links: [{ title: 'Design system doc', url: htmlUrl }],
+          subsections: [],
+        },
+      ],
+    }
+
+    const fetchMock = vi.fn(async (): Promise<Response> => {
+      return new Response(htmlSnapshot, {
+        status: 200,
+        statusText: 'OK',
+        headers: {
+          'content-type': 'text/html; charset=utf-8',
+        },
+      })
+    })
+
+    vi.stubGlobal('fetch', fetchMock)
+
+    const snapshot = await enrichCodexDocumentWithLinkedMarkdown(parsed, { sourceUrl: 'https://example.com/llms.txt' })
+    const convertedContent = snapshot.documents[htmlUrl]?.content
+
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+    expect(snapshot.documents[htmlUrl]?.ok).toBe(true)
+    expect(convertedContent).toBeTruthy()
+    expect(convertedContent).not.toBe(htmlSnapshot)
+    expect(convertedContent).not.toContain('<div class="row card-group m-t-40">')
+    expect(convertedContent).toContain('Foundations')
+    expect(convertedContent).toContain('By following these guidelines, you will be able to:')
+  })
 })
 
 describe('resolve helpers', () => {
