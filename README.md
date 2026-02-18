@@ -11,6 +11,7 @@ Fetch llms.txt → Parse structure → Enrich linked docs → Normalize content 
 ```
 
 The server:
+
 1. Fetches and parses Cumulocity Codex documentation structure
 2. Deduplicates linked content with a promise cache
 3. Normalizes content (HTML→Markdown, placeholder replacement)
