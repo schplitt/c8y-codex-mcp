@@ -19,6 +19,7 @@ export default defineNitroConfig({
     deployConfig: true,
     nodeCompat: true,
     wrangler: {
+      name: "c8y-codex-mcp",
       kv_namespaces: [
         {
           binding: "CACHE",
