@@ -1,7 +1,7 @@
 {
-  "name": "c8y-docs-mcp",
+  "name": "c8y-codex-mcp",
   "version": "1.0.0",
-  "description": "Unofficial MCP server for C8Y Codex documentation",
+  "description": "MCP mirror of the official Cumulocity Codex documentation",
   "private": true,
   "scripts": {
     "build": "nitro build",

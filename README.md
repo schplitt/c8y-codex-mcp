@@ -1,6 +1,8 @@
-# c8y-docs-mcp
+# c8y-codex-mcp
 
 Unofficial MCP server for Cumulocity Codex documentation.
+
+This project is a mirror of the official Codex docs at https://cumulocity.com/codex.
 
 This project fetches and parses Codex `llms.txt`, enriches linked docs into a deduplicated snapshot, and exposes MCP tools so an LLM can discover and request relevant documentation content.
 
