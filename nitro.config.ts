@@ -7,8 +7,12 @@ export default defineNitroConfig({
   preset: "cloudflare-module",
   imports: false,
   rollupConfig: {
-    plugins: [wasm()]
+    plugins: [wasm({
+      targetEnv: "browser"
+    })],
+    treeshake: true
   },
+  
   storage: {
     cache: {
       driver: "cloudflare-kv-binding",
