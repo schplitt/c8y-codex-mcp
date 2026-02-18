@@ -4,7 +4,7 @@ import { defineNitroConfig } from "nitropack/config"
 export default defineNitroConfig({
   compatibilityDate: "latest",
   srcDir: "server",
-  preset: "cloudflare_module",
+  preset: "cloudflare-module",
   imports: false,
   rollupConfig: {
     plugins: [wasm()]
@@ -27,7 +27,7 @@ export default defineNitroConfig({
         }
       ],
       compatibility_flags: [
-        "nodejs_compat_v2"
+        "nodejs_compat"
       ]
     }
   }
