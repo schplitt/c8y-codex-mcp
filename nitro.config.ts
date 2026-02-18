@@ -17,6 +17,7 @@ export default defineNitroConfig({
   },
   cloudflare: {
     deployConfig: true,
+    nodeCompat: true,
     wrangler: {
       kv_namespaces: [
         {
