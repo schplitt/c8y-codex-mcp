@@ -1,3 +1,4 @@
+import { convert } from '@kreuzberg/html-to-markdown'
 import type {
   CodexSnapshot,
   DocumentEntry,
@@ -39,7 +40,7 @@ export async function enrichCodexDocumentWithLinkedMarkdown(
 
         return {
           ok: true,
-          content: await response.text(),
+          content: normalizeFetchedContent(await response.text()),
           statusCode: response.status,
           statusText: response.statusText || null,
           fetchedAt,
@@ -94,4 +95,41 @@ function collectAllLinks(document: ParsedCodexDocument): string[] {
   }
 
   return [...allLinks]
+}
+
+function normalizeFetchedContent(content: string): string {
+  let normalizedContent = content
+
+  if (!looksLikeHtml(content)) {
+    return replaceSingleCharHugoEscapes(normalizedContent)
+  }
+
+  try {
+    const markdown = convert(content, {
+      extractMetadata: false
+    })
+    normalizedContent = markdown || content
+  } catch {
+    normalizedContent = content
+  }
+
+  return replaceSingleCharHugoEscapes(normalizedContent)
+}
+
+function looksLikeHtml(content: string): boolean {
+  const trimmed = content.trim()
+
+  if (!trimmed) {
+    return false
+  }
+
+  return /<!doctype\s+html/i.test(trimmed)
+    || /<html[\s>]/i.test(trimmed)
+    || /<body[\s>]/i.test(trimmed)
+    || /<head[\s>]/i.test(trimmed)
+    || /<([a-z][a-z0-9-]*)(\s[^>]*)?>[\s\S]*<\/\1>/i.test(trimmed)
+}
+
+function replaceSingleCharHugoEscapes(content: string): string {
+  return content.replace(/\{\{'([^'\n\r])'\}\}/g, '$1')
 }

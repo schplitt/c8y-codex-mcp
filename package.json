@@ -1,10 +1,14 @@
 {
   "name": "c8y-docs-mcp",
+  "version": "1.0.0",
+  "description": "Unofficial MCP server for C8Y Codex documentation",
   "private": true,
   "scripts": {
     "build": "nitro build",
     "dev": "nitro dev",
-    "preview": "node .output/server/index.mjs"
+    "preview": "node .output/server/index.mjs",
+    "test": "vitest",
+    "test:run": "vitest run"
   },
   "devDependencies": {
     "@types/node": "^24.10.13",
@@ -12,8 +16,10 @@
     "nitropack": "^2.12.4"
   },
   "dependencies": {
+    "@kreuzberg/html-to-markdown": "^2.25.1",
     "@tmcp/adapter-valibot": "^0.1.5",
     "@tmcp/transport-http": "^0.8.4",
+    "fuse.js": "^7.1.0",
     "markdown-exit": "1.0.0-beta.8",
     "tmcp": "^1.19.2",
     "valibot": "^1.2.0",

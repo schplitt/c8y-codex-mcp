@@ -8,12 +8,18 @@ importers:
 
   .:
     dependencies:
+      '@kreuzberg/html-to-markdown':
+        specifier: ^2.25.1
+        version: 2.25.1
       '@tmcp/adapter-valibot':
         specifier: ^0.1.5
         version: 0.1.5(tmcp@1.19.2)(valibot@1.2.0)
       '@tmcp/transport-http':
         specifier: ^0.8.4
         version: 0.8.4(tmcp@1.19.2)
+      fuse.js:
+        specifier: ^7.1.0
+        version: 7.1.0
       markdown-exit:
         specifier: 1.0.0-beta.8
         version: 1.0.0-beta.8
@@ -59,6 +65,9 @@ packages:
   '@cloudflare/kv-asset-handler@0.4.2':
     resolution: {integrity: sha512-SIOD2DxrRRwQ+jgzlXCqoEFiKOFqaPjhnNTGKXSRLvp1HiOvapLaFG2kEr9dYQTYe8rKrd9uvDUzmAITeNyaHQ==}
     engines: {node: '>=18.0.0'}
+
+  '@emnapi/runtime@1.7.1':
+    resolution: {integrity: sha512-PVtJr5CmLwYAU9PZDMITZoR5iAOShYREoR45EyyLrbntV50mdePTgUn4AmOw90Ifcj+x2kRjdzr1HP3RrNiHGA==}
 
   '@esbuild/aix-ppc64@0.27.3':
     resolution: {integrity: sha512-9fJMTNFTWZMh5qwrBItuziu834eOCUcEqymSH7pY+zoMVEZg3gcPuBNxH1EvfVYe9h0x/Ptw8KBzv7qxb7l8dg==}
@@ -250,6 +259,69 @@ packages:
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
 
+  '@kreuzberg/html-to-markdown-node-darwin-arm64@2.25.1':
+    resolution: {integrity: sha512-T8jE/uBQB9H30juu3AID+rEaLh4NenQ9TZnIxJSEHGcjybz2pTgMWhK2Eet7PcBvNGkP8LVFtGNBypWX3HjghA==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@kreuzberg/html-to-markdown-node-darwin-x64@2.25.1':
+    resolution: {integrity: sha512-zInsMm0nHmyJ8oQYKjux8AHQG8y7wCLSHJ+ys8PaEWM0ABNm3fucjf52fWKNi083x9GSFkHN6EWuMOKR+p4EUg==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [darwin]
+
+  '@kreuzberg/html-to-markdown-node-linux-arm-gnueabihf@2.25.1':
+    resolution: {integrity: sha512-ALwJNADzq2KhUW5EPSS65Bh4sihPfl5D9NaVXBkEFaD+oj+5L02nW6E1Jw7xkmpNNtao9opgS5To5T8i4fKbbQ==}
+    engines: {node: '>= 10'}
+    cpu: [arm]
+    os: [linux]
+
+  '@kreuzberg/html-to-markdown-node-linux-arm64-gnu@2.25.1':
+    resolution: {integrity: sha512-RD/g2344lOznK0Wmj6rd7pU3W9u8J92k8RT+5rD0VEHP+lf7AiB4310r6UPbaCM74cyi25j52iuIhNZXcqQoxQ==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [linux]
+
+  '@kreuzberg/html-to-markdown-node-linux-arm64-musl@2.25.1':
+    resolution: {integrity: sha512-kELm2GFwnOy/KvJl6mT9VKI8TOttpLlgWq9uUk+PItZJs0P++Uc+vrD9OB9uoBJCNTFqXcm9hNUmFpeYhE40Ww==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [linux]
+
+  '@kreuzberg/html-to-markdown-node-linux-x64-gnu@2.25.1':
+    resolution: {integrity: sha512-c+eHgoE3ozV7mU8yBarwLGyf3M/0nkvoxbOtgqDwSxQ98xnOEJhe1p8ee1W7vU/Dn8tfAVoVeOFQ6ITXUBGp+g==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [linux]
+
+  '@kreuzberg/html-to-markdown-node-linux-x64-musl@2.25.1':
+    resolution: {integrity: sha512-5Sj68+azXFQdcl++deulcinVvXvdfDL7roLqi3JcU9uXWIkhi1W78x76+24qIidkrGyiCxPPKbhNrv7Yy5Dwig==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [linux]
+
+  '@kreuzberg/html-to-markdown-node-win32-arm64-msvc@2.25.1':
+    resolution: {integrity: sha512-aZtLGebPT1e0YYft3q1nNsSlFU5ugbA3hZcuPEhmKkCnz0IcV1XKYinhJOFbyrWqsr20KlztDEVA4+AAmS+BHw==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [win32]
+
+  '@kreuzberg/html-to-markdown-node-win32-x64-msvc@2.25.1':
+    resolution: {integrity: sha512-hRIyutuzZpD946I9oqq6CWM9TL/2pd6aVb60S1gCB3jRK4vPRt9fqgn13tTCcMzMLKKwKmRnocb84tqiW1flfQ==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [win32]
+
+  '@kreuzberg/html-to-markdown-node@2.25.1':
+    resolution: {integrity: sha512-oB7vDDCrNp338/x9Saa8qV+QYDG4Letv50hYVRZ3CfoXS3ONOWIt/CGKxFBNQe+paFDUO5MTEZ1SgMdXvnMK1A==}
+    engines: {node: '>= 10'}
+
+  '@kreuzberg/html-to-markdown@2.25.1':
+    resolution: {integrity: sha512-sjOZ86ogs7AaLUaHLD7OIejKKHq0URAV3qBEFVyGtfZWIG4ku9VdElvJmEuDs5ryKZRpEZhrbsV8AeprbBwmAQ==}
+    engines: {bun: '>=1.2', node: '>=18'}
+    hasBin: true
+
   '@mapbox/node-pre-gyp@2.0.3':
     resolution: {integrity: sha512-uwPAhccfFJlsfCxMYTwOdVfOz3xqyj8xYL3zJj8f0pb30tLohnnFPhLuqp4/qoEz8sNxe4SESZedcBojRefIzg==}
     engines: {node: '>=18'}
@@ -296,42 +368,36 @@ packages:
     engines: {node: '>= 10.0.0'}
     cpu: [arm]
     os: [linux]
-    libc: [glibc]
 
   '@parcel/watcher-linux-arm-musl@2.5.6':
     resolution: {integrity: sha512-Ve3gUCG57nuUUSyjBq/MAM0CzArtuIOxsBdQ+ftz6ho8n7s1i9E1Nmk/xmP323r2YL0SONs1EuwqBp2u1k5fxg==}
     engines: {node: '>= 10.0.0'}
     cpu: [arm]
     os: [linux]
-    libc: [musl]
 
   '@parcel/watcher-linux-arm64-glibc@2.5.6':
     resolution: {integrity: sha512-f2g/DT3NhGPdBmMWYoxixqYr3v/UXcmLOYy16Bx0TM20Tchduwr4EaCbmxh1321TABqPGDpS8D/ggOTaljijOA==}
     engines: {node: '>= 10.0.0'}
     cpu: [arm64]
     os: [linux]
-    libc: [glibc]
 
   '@parcel/watcher-linux-arm64-musl@2.5.6':
     resolution: {integrity: sha512-qb6naMDGlbCwdhLj6hgoVKJl2odL34z2sqkC7Z6kzir8b5W65WYDpLB6R06KabvZdgoHI/zxke4b3zR0wAbDTA==}
     engines: {node: '>= 10.0.0'}
     cpu: [arm64]
     os: [linux]
-    libc: [musl]
 
   '@parcel/watcher-linux-x64-glibc@2.5.6':
     resolution: {integrity: sha512-kbT5wvNQlx7NaGjzPFu8nVIW1rWqV780O7ZtkjuWaPUgpv2NMFpjYERVi0UYj1msZNyCzGlaCWEtzc+exjMGbQ==}
     engines: {node: '>= 10.0.0'}
     cpu: [x64]
     os: [linux]
-    libc: [glibc]
 
   '@parcel/watcher-linux-x64-musl@2.5.6':
     resolution: {integrity: sha512-1JRFeC+h7RdXwldHzTsmdtYR/Ku8SylLgTU/reMuqdVD7CtLwf0VR1FqeprZ0eHQkO0vqsbvFLXUmYm/uNKJBg==}
     engines: {node: '>= 10.0.0'}
     cpu: [x64]
     os: [linux]
-    libc: [musl]
 
   '@parcel/watcher-wasm@2.5.6':
     resolution: {integrity: sha512-byAiBZ1t3tXQvc8dMD/eoyE7lTXYorhn+6uVW5AC+JGI1KtJC/LvDche5cfUE+qiefH+Ybq0bUCJU0aB1cSHUA==}
@@ -480,79 +546,66 @@ packages:
     resolution: {integrity: sha512-F8sWbhZ7tyuEfsmOxwc2giKDQzN3+kuBLPwwZGyVkLlKGdV1nvnNwYD0fKQ8+XS6hp9nY7B+ZeK01EBUE7aHaw==}
     cpu: [arm]
     os: [linux]
-    libc: [glibc]
 
   '@rollup/rollup-linux-arm-musleabihf@4.57.1':
     resolution: {integrity: sha512-rGfNUfn0GIeXtBP1wL5MnzSj98+PZe/AXaGBCRmT0ts80lU5CATYGxXukeTX39XBKsxzFpEeK+Mrp9faXOlmrw==}
     cpu: [arm]
     os: [linux]
-    libc: [musl]
 
   '@rollup/rollup-linux-arm64-gnu@4.57.1':
     resolution: {integrity: sha512-MMtej3YHWeg/0klK2Qodf3yrNzz6CGjo2UntLvk2RSPlhzgLvYEB3frRvbEF2wRKh1Z2fDIg9KRPe1fawv7C+g==}
     cpu: [arm64]
     os: [linux]
-    libc: [glibc]
 
   '@rollup/rollup-linux-arm64-musl@4.57.1':
     resolution: {integrity: sha512-1a/qhaaOXhqXGpMFMET9VqwZakkljWHLmZOX48R0I/YLbhdxr1m4gtG1Hq7++VhVUmf+L3sTAf9op4JlhQ5u1Q==}
     cpu: [arm64]
     os: [linux]
-    libc: [musl]
 
   '@rollup/rollup-linux-loong64-gnu@4.57.1':
     resolution: {integrity: sha512-QWO6RQTZ/cqYtJMtxhkRkidoNGXc7ERPbZN7dVW5SdURuLeVU7lwKMpo18XdcmpWYd0qsP1bwKPf7DNSUinhvA==}
     cpu: [loong64]
     os: [linux]
-    libc: [glibc]
 
   '@rollup/rollup-linux-loong64-musl@4.57.1':
     resolution: {integrity: sha512-xpObYIf+8gprgWaPP32xiN5RVTi/s5FCR+XMXSKmhfoJjrpRAjCuuqQXyxUa/eJTdAE6eJ+KDKaoEqjZQxh3Gw==}
     cpu: [loong64]
     os: [linux]
-    libc: [musl]
 
   '@rollup/rollup-linux-ppc64-gnu@4.57.1':
     resolution: {integrity: sha512-4BrCgrpZo4hvzMDKRqEaW1zeecScDCR+2nZ86ATLhAoJ5FQ+lbHVD3ttKe74/c7tNT9c6F2viwB3ufwp01Oh2w==}
     cpu: [ppc64]
     os: [linux]
-    libc: [glibc]
 
   '@rollup/rollup-linux-ppc64-musl@4.57.1':
     resolution: {integrity: sha512-NOlUuzesGauESAyEYFSe3QTUguL+lvrN1HtwEEsU2rOwdUDeTMJdO5dUYl/2hKf9jWydJrO9OL/XSSf65R5+Xw==}
     cpu: [ppc64]
     os: [linux]
-    libc: [musl]
 
   '@rollup/rollup-linux-riscv64-gnu@4.57.1':
     resolution: {integrity: sha512-ptA88htVp0AwUUqhVghwDIKlvJMD/fmL/wrQj99PRHFRAG6Z5nbWoWG4o81Nt9FT+IuqUQi+L31ZKAFeJ5Is+A==}
     cpu: [riscv64]
     os: [linux]
-    libc: [glibc]
 
   '@rollup/rollup-linux-riscv64-musl@4.57.1':
     resolution: {integrity: sha512-S51t7aMMTNdmAMPpBg7OOsTdn4tySRQvklmL3RpDRyknk87+Sp3xaumlatU+ppQ+5raY7sSTcC2beGgvhENfuw==}
     cpu: [riscv64]
     os: [linux]
-    libc: [musl]
 
   '@rollup/rollup-linux-s390x-gnu@4.57.1':
     resolution: {integrity: sha512-Bl00OFnVFkL82FHbEqy3k5CUCKH6OEJL54KCyx2oqsmZnFTR8IoNqBF+mjQVcRCT5sB6yOvK8A37LNm/kPJiZg==}
     cpu: [s390x]
     os: [linux]
-    libc: [glibc]
 
   '@rollup/rollup-linux-x64-gnu@4.57.1':
     resolution: {integrity: sha512-ABca4ceT4N+Tv/GtotnWAeXZUZuM/9AQyCyKYyKnpk4yoA7QIAuBt6Hkgpw8kActYlew2mvckXkvx0FfoInnLg==}
     cpu: [x64]
     os: [linux]
-    libc: [glibc]
 
   '@rollup/rollup-linux-x64-musl@4.57.1':
     resolution: {integrity: sha512-HFps0JeGtuOR2convgRRkHCekD7j+gdAuXM+/i6kGzQtFhlCtQkpwtNzkNj6QhCDp7DRJ7+qC/1Vg2jt5iSOFw==}
     cpu: [x64]
     os: [linux]
-    libc: [musl]
 
   '@rollup/rollup-openbsd-x64@4.57.1':
     resolution: {integrity: sha512-H+hXEv9gdVQuDTgnqD+SQffoWoc0Of59AStSzTEj/feWTBAnSfSD3+Dql1ZruJQxmykT/JVY0dE8Ka7z0DH1hw==}
@@ -1066,6 +1119,10 @@ packages:
 
   function-bind@1.1.2:
     resolution: {integrity: sha512-7XHNxH7qX9xG5mIwxkhumTox/MIRNcOgDrxWsMt2pAr23WHp6MrRlN7FBSFpCpr+oVO0F744iUgR82nJMfG2SA==}
+
+  fuse.js@7.1.0:
+    resolution: {integrity: sha512-trLf4SzuuUxfusZADLINj+dE8clK1frKdmqiJNb1Es75fmI5oY6X2mxLVUciLLjxqw/xr72Dhy+lER6dGd02FQ==}
+    engines: {node: '>=10'}
 
   get-caller-file@2.0.5:
     resolution: {integrity: sha512-DyFP3BM/3YHTQOCUL/w0OZHR0lpKeGrxotcHWcqNEdnltqFwXVfhEBQ94eIo34AfQpo0rGki4cyIiftY06h2Fg==}
@@ -1755,6 +1812,9 @@ packages:
   tr46@0.0.3:
     resolution: {integrity: sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw==}
 
+  tslib@2.8.1:
+    resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
+
   type-fest@5.4.4:
     resolution: {integrity: sha512-JnTrzGu+zPV3aXIUhnyWJj4z/wigMsdYajGLIYakqyOW1nPllzXEJee0QQbHj+CTIQtXGlAjuK0UY+2xTyjVAw==}
     engines: {node: '>=20'}
@@ -2030,6 +2090,10 @@ snapshots:
 
   '@cloudflare/kv-asset-handler@0.4.2': {}
 
+  '@emnapi/runtime@1.7.1':
+    dependencies:
+      tslib: 2.8.1
+
   '@esbuild/aix-ppc64@0.27.3':
     optional: true
 
@@ -2148,6 +2212,51 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
+
+  '@kreuzberg/html-to-markdown-node-darwin-arm64@2.25.1':
+    optional: true
+
+  '@kreuzberg/html-to-markdown-node-darwin-x64@2.25.1':
+    optional: true
+
+  '@kreuzberg/html-to-markdown-node-linux-arm-gnueabihf@2.25.1':
+    optional: true
+
+  '@kreuzberg/html-to-markdown-node-linux-arm64-gnu@2.25.1':
+    optional: true
+
+  '@kreuzberg/html-to-markdown-node-linux-arm64-musl@2.25.1':
+    optional: true
+
+  '@kreuzberg/html-to-markdown-node-linux-x64-gnu@2.25.1':
+    optional: true
+
+  '@kreuzberg/html-to-markdown-node-linux-x64-musl@2.25.1':
+    optional: true
+
+  '@kreuzberg/html-to-markdown-node-win32-arm64-msvc@2.25.1':
+    optional: true
+
+  '@kreuzberg/html-to-markdown-node-win32-x64-msvc@2.25.1':
+    optional: true
+
+  '@kreuzberg/html-to-markdown-node@2.25.1':
+    dependencies:
+      '@emnapi/runtime': 1.7.1
+    optionalDependencies:
+      '@kreuzberg/html-to-markdown-node-darwin-arm64': 2.25.1
+      '@kreuzberg/html-to-markdown-node-darwin-x64': 2.25.1
+      '@kreuzberg/html-to-markdown-node-linux-arm-gnueabihf': 2.25.1
+      '@kreuzberg/html-to-markdown-node-linux-arm64-gnu': 2.25.1
+      '@kreuzberg/html-to-markdown-node-linux-arm64-musl': 2.25.1
+      '@kreuzberg/html-to-markdown-node-linux-x64-gnu': 2.25.1
+      '@kreuzberg/html-to-markdown-node-linux-x64-musl': 2.25.1
+      '@kreuzberg/html-to-markdown-node-win32-arm64-msvc': 2.25.1
+      '@kreuzberg/html-to-markdown-node-win32-x64-msvc': 2.25.1
+
+  '@kreuzberg/html-to-markdown@2.25.1':
+    dependencies:
+      '@kreuzberg/html-to-markdown-node': 2.25.1
 
   '@mapbox/node-pre-gyp@2.0.3':
     dependencies:
@@ -2835,6 +2944,8 @@ snapshots:
     optional: true
 
   function-bind@1.1.2: {}
+
+  fuse.js@7.1.0: {}
 
   get-caller-file@2.0.5: {}
 
@@ -3635,6 +3746,8 @@ snapshots:
   toidentifier@1.0.1: {}
 
   tr46@0.0.3: {}
+
+  tslib@2.8.1: {}
 
   type-fest@5.4.4:
     dependencies:
