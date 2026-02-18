@@ -27,7 +27,6 @@ export default defineNitroConfig({
         }
       ],
       compatibility_flags: [
-        "nodejs_compat",
         "nodejs_compat_v2"
       ]
     }
