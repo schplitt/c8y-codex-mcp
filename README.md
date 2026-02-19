@@ -2,28 +2,35 @@
 
 Unofficial MCP server for Cumulocity Codex documentation.
 
-An LLM bridge that fetches Cumulocity docs, builds a deduplicated snapshot, and exposes MCP tools for efficient document discovery and retrieval.
+An LLM bridge that fetches Cumulocity docs and exposes MCP tools for efficient document discovery and retrieval.
 
 ## How it works
 
 ```
-Fetch llms.txt → Parse structure → Enrich linked docs → Normalize content → Build snapshot → Expose MCP tools
+Fetch llms.txt live → Parse structure → Resolve requested docs lazily → Cache browser-rendered content per URL → Expose MCP tools
 ```
 
 The server:
 
-1. Fetches and parses Cumulocity Codex documentation structure
-2. Deduplicates linked content with a promise cache
-3. Normalizes content (HTML→Markdown, placeholder replacement)
-4. Exposes MCP tools so LLMs can discover and request only needed docs
+1. Fetches and parses Cumulocity Codex structure on demand (no llms cache)
+2. Resolves document content only for requested links
+3. Caches successful browser-rendered docs per URL in KV with TTL
+4. Falls back to direct fetch if rendering fails and logs render failures
 
 ## Browser Rendering enrichment
 
-When running on Cloudflare Workers with a Browser Rendering binding, enrichment uses Playwright to render each discovered `.md` link as its non-`.md` page URL, extracts `main#main-content`, and converts that HTML to markdown.
+When running on Cloudflare Workers with a Browser Rendering binding, document resolution uses Playwright to render each requested `.md` link as its non-`.md` page URL, extracts `main#main-content`, and converts that HTML to markdown.
 
-- Browser binding name must be `MYBROWSER`
-- The browser instance is reused across enrich operations
-- If rendering/extraction fails, enrichment falls back to direct `.md` fetch
+- Browser binding name must be `BROWSER`
+- A fresh browser is launched per render request and closed afterwards
+- If rendering/extraction fails, resolution falls back to direct `.md` fetch and logs the failure
+
+## Caching model
+
+- `llms.txt` structure is always fetched live and is not cached
+- Linked document content is cached per URL in KV
+- Only successful browser-rendered content is cached
+- Content cache entries expire via TTL and are re-computed on next request
 
 ## Remote MCP runtime
 

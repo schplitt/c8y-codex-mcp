@@ -1,12 +1,12 @@
 import { enrichCodexDocumentWithLinkedMarkdown } from './enrich'
 import { parseCodexLlmsMarkdown } from './parse'
-import type { CodexSnapshot } from './types'
+import type { CodexSnapshot, ParsedCodexDocument } from './types'
 
 const DEFAULT_LLMS_URL = 'https://cumulocity.com/codex/llms.txt'
 
-export async function fetchParseAndEnrichCodexLlms(
+export async function fetchAndParseCodexLlms(
   sourceUrl: string = DEFAULT_LLMS_URL,
-): Promise<CodexSnapshot> {
+): Promise<ParsedCodexDocument> {
   const response = await fetch(sourceUrl)
 
   if (!response.ok) {
@@ -14,7 +14,13 @@ export async function fetchParseAndEnrichCodexLlms(
   }
 
   const markdown = await response.text()
-  const parsed = parseCodexLlmsMarkdown(markdown)
+  return parseCodexLlmsMarkdown(markdown)
+}
+
+export async function fetchParseAndEnrichCodexLlms(
+  sourceUrl: string = DEFAULT_LLMS_URL,
+): Promise<CodexSnapshot> {
+  const parsed = await fetchAndParseCodexLlms(sourceUrl)
 
   return enrichCodexDocumentWithLinkedMarkdown(parsed, { sourceUrl })
 }

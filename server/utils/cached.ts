@@ -1,10 +1,19 @@
 import { createCachedFunction } from './cache-fn'
-import { fetchParseAndEnrichCodexLlms } from './c8y'
+import { fetchAndParseCodexLlms } from './c8y'
+import { resolveDocuments } from './c8y/enrich'
+import type { ResolveDocumentsOptions } from './c8y/types'
 
-export const useCodexContext = createCachedFunction(
-  () => fetchParseAndEnrichCodexLlms(),
+const STRUCTURE_CACHE_KEY = 'codex:structure:v1'
+const STRUCTURE_CACHE_TTL_SECONDS = 60 * 10
+
+export const useCodexStructure = createCachedFunction(
+  () => fetchAndParseCodexLlms(),
   {
-    key: 'codexContext-cache',
-    maxAge: 60 * 60 * 24, // 24 hours
+    key: STRUCTURE_CACHE_KEY,
+    maxAge: STRUCTURE_CACHE_TTL_SECONDS,
   },
 )
+
+export async function useCodexDocuments(urls: string[], options: ResolveDocumentsOptions = {}) {
+  return resolveDocuments(urls, options)
+}

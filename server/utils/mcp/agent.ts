@@ -3,18 +3,10 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { McpAgent } from 'agents/mcp'
 import { z } from 'zod'
 import pkgjson from '../../../package.json'
-import { useCodexContext } from '../cached'
+import { useCodexDocuments, useCodexStructure } from '../cached'
+import type { DocumentEntry, ParsedSection } from '../c8y/types'
 
-function resolveLinkedDocument(
-  documentEntry: {
-    ok: boolean
-    content: string | null
-    statusCode: number | null
-    statusText: string | null
-    error: string | null
-  } | undefined,
-  url: string,
-): string {
+function resolveLinkedDocument(documentEntry: DocumentEntry | undefined, url: string): string {
   if (documentEntry?.ok && documentEntry.content) {
     return documentEntry.content
   }
@@ -24,6 +16,27 @@ function resolveLinkedDocument(
   }
 
   return `Failed to fetch document content. Status: ${documentEntry.statusCode} ${documentEntry.statusText}. Error: ${documentEntry.error}`
+}
+
+function collectRequestedSectionUrls(section: ParsedSection, requestedSubsections?: string[]): string[] {
+  const urls = new Set<string>(section.links.map((link) => link.url))
+
+  const subsectionTitles = requestedSubsections && requestedSubsections.length > 0
+    ? requestedSubsections
+    : section.subsections.map((subsection) => subsection.title)
+
+  for (const subsectionTitle of subsectionTitles) {
+    const subsection = section.subsections.find((candidate) => candidate.title === subsectionTitle)
+    if (!subsection) {
+      continue
+    }
+
+    for (const link of subsection.links) {
+      urls.add(link.url)
+    }
+  }
+
+  return [...urls]
 }
 
 export class CodexMcpAgent extends McpAgent {
@@ -41,9 +54,9 @@ export class CodexMcpAgent extends McpAgent {
         description: 'List the Codex documentation index (sections and subsections) with titles, descriptions, and links.',
       },
       async () => {
-        const codexConext = await useCodexContext()
-        let toolOutput = `# ${codexConext.structure.title}\n\n${codexConext.structure.description}\n\n`
-        for (const section of codexConext.structure.sections) {
+        const structure = await useCodexStructure()
+        let toolOutput = `# ${structure.title}\n\n${structure.description}\n\n`
+        for (const section of structure.sections) {
           toolOutput += `## ${section.title}\n${
             section.links.map((link) => `[${link.title}](${link.url})`).join('\n')
           }\n${section.description}\n\n`
@@ -70,8 +83,7 @@ export class CodexMcpAgent extends McpAgent {
         },
       },
       async ({ urls }) => {
-        const codexConext = await useCodexContext()
-        const documents = codexConext.documents
+        const documents = await useCodexDocuments(urls)
 
         let resultMD = ''
         for (const url of urls) {
@@ -107,8 +119,8 @@ export class CodexMcpAgent extends McpAgent {
         },
       },
       async ({ patterns, limitPerPattern }) => {
-        const codexConext = await useCodexContext()
-        const sections = codexConext.structure.sections.map((section) => ({
+        const structure = await useCodexStructure()
+        const sections = structure.sections.map((section) => ({
           title: section.title,
           description: section.description,
         }))
@@ -175,8 +187,22 @@ export class CodexMcpAgent extends McpAgent {
           }
         }
 
-        const codexConext = await useCodexContext()
-        const { structure, documents } = codexConext
+        const structure = await useCodexStructure()
+
+        const requestedUrls = new Set<string>()
+
+        for (const requestedSection of sections) {
+          const section = structure.sections.find((candidate) => candidate.title === requestedSection.title)
+          if (!section) {
+            continue
+          }
+
+          for (const url of collectRequestedSectionUrls(section, requestedSection.subsections)) {
+            requestedUrls.add(url)
+          }
+        }
+
+        const documents = await useCodexDocuments([...requestedUrls])
 
         let resultMD = `# ${structure.title}\n\n`
 

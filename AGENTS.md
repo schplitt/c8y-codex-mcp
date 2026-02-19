@@ -8,7 +8,7 @@ Primary goal:
 
 - fetch Cumulocity Codex `llms.txt`
 - parse it into a compact structure model
-- enrich linked documentation into a deduplicated snapshot
+- resolve linked documentation lazily with per-URL caching
 - expose MCP tools that let an LLM discover section names and request only needed content
 
 It parses codex markdown/txt into a typed document model with:
@@ -24,18 +24,18 @@ It parses codex markdown/txt into a typed document model with:
     - `description`
     - `links[]` (`title`, `url`, `.md` only)
 
-  It builds a snapshot by fetching section/subsection links with a Promise cache:
-  - `cache`: `Map<link, Promise<DocumentEntry>>`
-  - repeated links share one in-flight/completed fetch
-  - all fetched docs are stored once in `documents[url]` with status metadata
+  Linked docs are resolved lazily (on request) and cached per URL:
+  - structure (`llms.txt`) is fetched live and not cached
+  - document content is cached independently in KV with TTL
+  - only successful browser-rendered content is persisted in cache
 
 Browser Rendering path:
 
-- `fetchParseAndEnrichCodexLlms` attempts to load `env.BROWSER` from `cloudflare:workers`
+- lazy document resolution attempts to load `env.BROWSER` from `cloudflare:workers`
 - when available, it renders each `.md` URL as non-`.md` via `@cloudflare/playwright`
 - it extracts `main#main-content` HTML and feeds that into existing HTML→Markdown normalization
-- if rendering/extraction is unavailable or fails, enrichment falls back to direct `.md` fetch
-- browser sessions are reused via a shared module-level Playwright browser instance
+- if rendering/extraction is unavailable or fails, resolution falls back to direct `.md` fetch
+- render failures are logged with structured metadata (phase/url/error)
 
 Additionally:
 
@@ -54,9 +54,9 @@ server/
 │   └── mcp.ts             # MCP route forwarding to CodexMcpAgent
 └── utils/
     ├── c8y/
-    │   ├── index.ts       # Fetch + parse + enrich entry + cached context
+    │   ├── index.ts       # Fetch + parse llms structure entry
     │   ├── parse.ts       # Markdown parsing into typed section model
-    │   ├── enrich.ts      # Linked doc fetch + Promise cache + HTML→Markdown normalization
+    │   ├── enrich.ts      # Lazy linked doc resolution + per-URL KV caching + HTML→Markdown normalization
     │   ├── resolve.ts     # Section/subsection content resolution from snapshot
     │   └── types.ts       # Shared types + snapshot types
     └── mcp/
@@ -89,9 +89,10 @@ tests/
 ### Runtime
 
 - Nitro server with `srcDir: "server"`
-- MCP endpoint `/mcp` served by `CodexMcpAgent.serve('/mcp')` from `server/index.ts`
+- MCP endpoint `/mcp` served by `CodexMcpAgent.serve('/mcp')` from `server/routes/mcp.ts`
 - MCP runtime uses Durable Object-backed `agents/mcp` (`CodexMcpAgent` class)
-- Codex context cached with Nitro `defineCachedFunction`
+- `llms.txt` structure is fetched live (no persistent structure cache)
+- linked doc content is cached per URL in KV with TTL
 
 ## Development
 
@@ -216,6 +217,7 @@ This section captures project-specific knowledge, tool quirks, and lessons learn
 - Keep coverage for HTML normalization with fixture-based tests so HTML detection and conversion behavior stays stable.
 - Keep Hugo placeholder replacement strict: match and replace only `{{'<one-char>'}}` placeholders.
 - Keep enrichment fetch concurrency bounded to avoid worker hangs from unbounded parallel link processing.
+- Keep structure and linked-document cache concerns separate: never block index/search tools on bulk content enrichment.
 - Do not introduce dependency injection parameters solely for testability unless explicitly requested.
 - Do not introduce dynamic imports for Cloudflare env bindings as a test workaround unless explicitly requested.
 - In Vitest, prefer local per-test/per-file mocks (`vi.mock`, `vi.stubGlobal`) over global setup files.
