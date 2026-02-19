@@ -1,5 +1,6 @@
 import { createStorage } from 'unstorage'
 import cloudflareKVBindingDriver from 'unstorage/drivers/cloudflare-kv-binding'
+import memoryDriver from 'unstorage/drivers/memory'
 import { env } from 'cloudflare:workers'
 
 interface CacheEntry<T> {
@@ -16,6 +17,23 @@ export interface CachedFunctionOptions<TArgs extends unknown[], TResult> {
   maxAge: CachedMaxAge<TArgs> // seconds
   shouldCache?: (value: TResult, ...args: TArgs) => boolean
   onCacheEvent?: (event: CachedEvent, details: { key: string, maxAge: number }, ...args: TArgs) => void
+}
+
+let _storage: ReturnType<typeof createStorage> | null = null
+
+function getStorage() {
+  if (_storage)
+    return _storage
+
+  // Use KV if available, otherwise fall back to memory (for tests)
+  const hasKVBinding = env.CACHE !== undefined
+  _storage = createStorage({
+    driver: hasKVBinding
+      ? cloudflareKVBindingDriver({ binding: env.CACHE })
+      : memoryDriver(),
+  })
+
+  return _storage
 }
 
 /**
@@ -38,9 +56,7 @@ export function createCachedFunction<TArgs extends unknown[], TResult>(
   fn: (...args: TArgs) => Promise<TResult>,
   options: CachedFunctionOptions<TArgs, TResult>,
 ) {
-  const storage = createStorage({
-    driver: cloudflareKVBindingDriver({ binding: env.CACHE }),
-  })
+  const storage = getStorage()
 
   const resolveKey = async (...args: TArgs): Promise<string> => {
     if (typeof options.key === 'function') {
