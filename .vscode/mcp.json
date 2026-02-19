@@ -3,6 +3,14 @@
 		"local-c8y-docs-mcp": {
 			"url": "http://localhost:8787/mcp",
 			"type": "http"
+		},
+		"remote-c8y-docs-mcp": {
+			"url": "https://c8y-codex-mcp.schplitt.workers.dev/mcp",
+			"type": "http"
+		},
+		"cloudflare-mcp": {
+			"url": "https://docs.mcp.cloudflare.com/mcp",
+			"type": "http"
 		}
 	},
 	"inputs": []

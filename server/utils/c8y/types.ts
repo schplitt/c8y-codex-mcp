@@ -31,6 +31,12 @@ export interface DocumentEntry {
   error: string | null
 }
 
+export interface CachedDocumentEntry extends DocumentEntry {
+  url: string
+  source: 'browser'
+  expiresAt: string
+}
+
 export interface CodexSnapshotMeta {
   builtAt: string
   sourceUrl: string
@@ -50,4 +56,13 @@ export interface EnrichCodexDocumentWithLinkedMarkdownOptions {
 
 export interface ResolveSnapshotOptions {
   separator?: string
+}
+
+export interface ResolveDocumentOptions {
+  cacheTtlSeconds?: number
+  renderHtml?: (url: string) => Promise<string | null>
+}
+
+export interface ResolveDocumentsOptions extends ResolveDocumentOptions {
+  concurrency?: number
 }
