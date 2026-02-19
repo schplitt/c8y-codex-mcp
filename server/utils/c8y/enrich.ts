@@ -1,5 +1,3 @@
-import { convert, initWasm, wasmReady } from '@kreuzberg/html-to-markdown-wasm'
-
 import type {
   CodexSnapshot,
   DocumentEntry,
@@ -7,6 +5,8 @@ import type {
   LinkedMarkdownPromiseCache,
   ParsedCodexDocument,
 } from './types'
+import { getMainContentHTMLofPage } from '../browser'
+import { htmlToMarkdown } from '../html-parser'
 
 export async function enrichCodexDocumentWithLinkedMarkdown(
   document: ParsedCodexDocument,
@@ -26,6 +26,19 @@ export async function enrichCodexDocumentWithLinkedMarkdown(
       const fetchedAt = new Date().toISOString()
 
       try {
+        const renderedMainContentHtml = await getMainContentHTMLofPage(url)
+
+        if (renderedMainContentHtml) {
+          return {
+            ok: true,
+            content: await htmlToMarkdown(renderedMainContentHtml),
+            statusCode: 200,
+            statusText: 'OK',
+            fetchedAt,
+            error: null,
+          }
+        }
+
         const response = await fetch(url)
 
         if (!response.ok) {
@@ -41,7 +54,7 @@ export async function enrichCodexDocumentWithLinkedMarkdown(
 
         return {
           ok: true,
-          content: await normalizeFetchedContent(await response.text()),
+          content: await htmlToMarkdown(await response.text()),
           statusCode: response.status,
           statusText: response.statusText || null,
           fetchedAt,
@@ -96,43 +109,4 @@ function collectAllLinks(document: ParsedCodexDocument): string[] {
   }
 
   return [...allLinks]
-}
-
-// wait for WASM to be ready
-const ready = wasmReady ?? initWasm()
-
-async function normalizeFetchedContent(content: string): Promise<string> {
-  let normalizedContent = content
-
-  if (!looksLikeHtml(content)) {
-    return replaceSingleCharHugoEscapes(normalizedContent)
-  }
-
-  try {
-    await ready
-    const markdown = convert(content)
-    normalizedContent = markdown || content
-  } catch {
-    normalizedContent = content
-  }
-
-  return replaceSingleCharHugoEscapes(normalizedContent)
-}
-
-function looksLikeHtml(content: string): boolean {
-  const trimmed = content.trim()
-
-  if (!trimmed) {
-    return false
-  }
-
-  return /<!doctype\s+html/i.test(trimmed)
-    || /<html[\s>]/i.test(trimmed)
-    || /<body[\s>]/i.test(trimmed)
-    || /<head[\s>]/i.test(trimmed)
-    || /<([a-z][a-z0-9-]*)(\s[^>]*)?>[\s\S]*<\/\1>/i.test(trimmed)
-}
-
-function replaceSingleCharHugoEscapes(content: string): string {
-  return content.replace(/\{\{'([^'\n\r])'\}\}/g, '$1')
 }

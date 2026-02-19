@@ -1,13 +1,14 @@
 import { eventHandler, toWebRequest } from 'h3'
-import { mcpServer } from '../utils/mcp'
+import { env } from 'cloudflare:workers'
+import { CodexMcpAgent } from '../utils/mcp/agent'
 
-let mcpServerInstance: ReturnType<typeof mcpServer> | null = null
-export default eventHandler((event) => {
-  if (!mcpServerInstance) {
-    mcpServerInstance = mcpServer()
+export default eventHandler(async (event) => {
+  const request = toWebRequest(event)
+  const executionCtx = event.context.cloudflare?.ctx
+
+  if (!executionCtx) {
+    return new Response('Missing Cloudflare execution context', { status: 500 })
   }
 
-  const request = toWebRequest(event)
-
-  return mcpServerInstance.respond(request)
+  return CodexMcpAgent.serve('/mcp').fetch(request, env, executionCtx)
 })

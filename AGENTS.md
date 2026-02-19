@@ -29,6 +29,14 @@ It parses codex markdown/txt into a typed document model with:
   - repeated links share one in-flight/completed fetch
   - all fetched docs are stored once in `documents[url]` with status metadata
 
+Browser Rendering path:
+
+- `fetchParseAndEnrichCodexLlms` attempts to load `env.BROWSER` from `cloudflare:workers`
+- when available, it renders each `.md` URL as non-`.md` via `@cloudflare/playwright`
+- it extracts `main#main-content` HTML and feeds that into existing HTML→Markdown normalization
+- if rendering/extraction is unavailable or fails, enrichment falls back to direct `.md` fetch
+- browser sessions are reused via a shared module-level Playwright browser instance
+
 Additionally:
 
 - enrichment first tries to detect whether fetched content is HTML
@@ -43,7 +51,7 @@ Additionally:
 server/
 ├── routes/
 │   ├── index.ts           # Basic Nitro root route
-│   └── mcp.ts             # MCP HTTP endpoint route
+│   └── mcp.ts             # MCP route forwarding to CodexMcpAgent
 └── utils/
     ├── c8y/
     │   ├── index.ts       # Fetch + parse + enrich entry + cached context
@@ -52,7 +60,7 @@ server/
     │   ├── resolve.ts     # Section/subsection content resolution from snapshot
     │   └── types.ts       # Shared types + snapshot types
     └── mcp/
-        └── index.ts       # MCP server + tool definitions
+      └── agent.ts       # Cloudflare McpAgent class + MCP tools
 tests/
 ├── llms-parser.test.ts
 ├── enrich-html-conversion.test.ts
@@ -81,7 +89,8 @@ tests/
 ### Runtime
 
 - Nitro server with `srcDir: "server"`
-- MCP endpoint served at route `server/routes/mcp.ts`
+- MCP endpoint `/mcp` served by `CodexMcpAgent.serve('/mcp')` from `server/index.ts`
+- MCP runtime uses Durable Object-backed `agents/mcp` (`CodexMcpAgent` class)
 - Codex context cached with Nitro `defineCachedFunction`
 
 ## Development
@@ -206,7 +215,15 @@ This section captures project-specific knowledge, tool quirks, and lessons learn
 - Keep HTML-to-Markdown conversion best-effort in enrichment; never fail the fetch pipeline because conversion fails.
 - Keep coverage for HTML normalization with fixture-based tests so HTML detection and conversion behavior stays stable.
 - Keep Hugo placeholder replacement strict: match and replace only `{{'<one-char>'}}` placeholders.
+- Keep enrichment fetch concurrency bounded to avoid worker hangs from unbounded parallel link processing.
+- Do not introduce dependency injection parameters solely for testability unless explicitly requested.
+- Do not introduce dynamic imports for Cloudflare env bindings as a test workaround unless explicitly requested.
+- In Vitest, prefer local per-test/per-file mocks (`vi.mock`, `vi.stubGlobal`) over global setup files.
 
 ### Common Mistakes to Avoid
 
 <!-- Add things that have been done wrong before and should be avoided -->
+
+- Do not add Vitest `setupFiles` for this project unless explicitly requested.
+- Do not refactor runtime APIs to injected parameters unless explicitly requested.
+- Do not replace static Cloudflare env imports with dynamic imports unless explicitly requested.

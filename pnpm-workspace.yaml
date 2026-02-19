@@ -1,15 +1,12 @@
-
-catalogMode: prefer
-
-shellEmulator: true
-
-
-trustPolicy: no-downgrade
-
-
 packages:
-  - '.'
+  - .
 
 onlyBuiltDependencies:
   - '@parcel/watcher'
   - esbuild
+  - sharp
+  - workerd
+
+shellEmulator: true
+
+trustPolicy: no-downgrade
