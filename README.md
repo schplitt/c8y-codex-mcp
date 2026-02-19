@@ -25,6 +25,14 @@ When running on Cloudflare Workers with a Browser Rendering binding, enrichment 
 - The browser instance is reused across enrich operations
 - If rendering/extraction fails, enrichment falls back to direct `.md` fetch
 
+## Remote MCP runtime
+
+The `/mcp` endpoint uses Cloudflare's `agents/mcp` (`McpAgent`) pattern with a Durable Object-backed MCP runtime.
+
+- Transport/session lifecycle is managed by the agent runtime
+- MCP tools are initialized in the agent class
+- Wrangler config includes a Durable Object class + binding for the MCP agent
+
 ## MCP tools
 
 - **list-codex-index** — List the documentation index (sections/subsections, descriptions, links)

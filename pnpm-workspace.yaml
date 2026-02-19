@@ -1,14 +1,6 @@
 packages:
   - .
 
-catalog:
-  '@modelcontextprotocol/sdk': 'catalog:'
-  h3: 1.15.5
-  wrangler: ^4.67.0
-  zod: 'catalog:'
-
-catalogMode: prefer
-
 onlyBuiltDependencies:
   - '@parcel/watcher'
   - esbuild

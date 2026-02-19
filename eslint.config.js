@@ -5,4 +5,5 @@ export default schplitt({
   pnpm: false,
 }).overrideRules({
   'eslint-comments/no-unlimited-disable': 'off',
+  'no-undef': 'off',
 })

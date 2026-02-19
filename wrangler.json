@@ -1,6 +1,22 @@
 {
   "compatibility_date": "2026-02-17",
   "name": "c8y-codex-mcp",
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": [
+        "CodexMcpAgent"
+      ]
+    }
+  ],
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "MCP_OBJECT",
+        "class_name": "CodexMcpAgent"
+      }
+    ]
+  },
   "kv_namespaces": [
     {
       "binding": "CACHE"
@@ -13,7 +29,6 @@
   "main": "./server/index.ts",
   "upload_source_maps": true,
   "compatibility_flags": [
-    "nodejs_compat",
-    "no_handle_cross_request_promise_resolution"
+    "nodejs_compat"
   ]
 }
