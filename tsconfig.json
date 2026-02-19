@@ -27,5 +27,6 @@
     // Module resolution
     "target": "ESNext",
     "skipLibCheck": true,
-  }
+  },
+  "include": [ "./server/**/*.ts","./server/index.ts", "./worker-configuration.d.ts"]
 }

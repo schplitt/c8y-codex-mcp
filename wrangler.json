@@ -1,0 +1,19 @@
+{
+  "compatibility_date": "2026-02-17",
+  "name": "c8y-codex-mcp",
+  "kv_namespaces": [
+    {
+      "binding": "CACHE"
+    }
+  ],
+  "browser": {
+    "binding": "BROWSER"
+  },
+  "workers_dev": true,
+  "main": "./server/index.ts",
+  "upload_source_maps": true,
+  "compatibility_flags": [
+    "nodejs_compat",
+    "no_handle_cross_request_promise_resolution"
+  ]
+}

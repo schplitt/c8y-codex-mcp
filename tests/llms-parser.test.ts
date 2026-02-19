@@ -2,10 +2,19 @@ import { readFile } from 'node:fs/promises'
 import { afterEach, describe, expect, test, vi } from 'vitest'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+
 import { fetchParseAndEnrichCodexLlms } from '../server/utils/c8y'
 import { enrichCodexDocumentWithLinkedMarkdown } from '../server/utils/c8y/enrich'
 import { parseCodexLlmsMarkdown } from '../server/utils/c8y/parse'
 import { resolveSectionMarkdown, resolveSubsectionMarkdown } from '../server/utils/c8y/resolve'
+
+vi.mock('@cloudflare/playwright', () => ({
+  launch: vi.fn().mockRejectedValue(new Error('Not available in test environment')),
+}))
+
+vi.mock('cloudflare:workers', () => ({
+  env: {},
+}))
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 

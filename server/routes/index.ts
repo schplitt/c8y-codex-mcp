@@ -1,6 +1,6 @@
 import { eventHandler, getRequestURL } from 'h3'
 
-export default eventHandler((event) => {
+export default eventHandler(async (event) => {
   const requestUrl = getRequestURL(event)
   const mcpUrl = new URL('/mcp', requestUrl).toString()
 

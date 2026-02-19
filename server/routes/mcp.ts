@@ -1,13 +1,8 @@
 import { eventHandler, toWebRequest } from 'h3'
-import { mcpServer } from '../utils/mcp'
+import { respondWithSdkMcp } from '../utils/mcp/other'
 
-let mcpServerInstance: ReturnType<typeof mcpServer> | null = null
 export default eventHandler((event) => {
-  if (!mcpServerInstance) {
-    mcpServerInstance = mcpServer()
-  }
-
   const request = toWebRequest(event)
 
-  return mcpServerInstance.respond(request)
+  return respondWithSdkMcp(request)
 })

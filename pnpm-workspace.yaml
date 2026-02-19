@@ -1,15 +1,20 @@
+packages:
+  - .
+
+catalog:
+  '@modelcontextprotocol/sdk': 'catalog:'
+  h3: 1.15.5
+  wrangler: ^4.67.0
+  zod: 'catalog:'
 
 catalogMode: prefer
-
-shellEmulator: true
-
-
-trustPolicy: no-downgrade
-
-
-packages:
-  - '.'
 
 onlyBuiltDependencies:
   - '@parcel/watcher'
   - esbuild
+  - sharp
+  - workerd
+
+shellEmulator: true
+
+trustPolicy: no-downgrade

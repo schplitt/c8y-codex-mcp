@@ -17,6 +17,14 @@ The server:
 3. Normalizes content (HTML→Markdown, placeholder replacement)
 4. Exposes MCP tools so LLMs can discover and request only needed docs
 
+## Browser Rendering enrichment
+
+When running on Cloudflare Workers with a Browser Rendering binding, enrichment uses Playwright to render each discovered `.md` link as its non-`.md` page URL, extracts `main#main-content`, and converts that HTML to markdown.
+
+- Browser binding name must be `MYBROWSER`
+- The browser instance is reused across enrich operations
+- If rendering/extraction fails, enrichment falls back to direct `.md` fetch
+
 ## MCP tools
 
 - **list-codex-index** — List the documentation index (sections/subsections, descriptions, links)

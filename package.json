@@ -5,31 +5,35 @@
   "packageManager": "pnpm@10.26.0",
   "description": "MCP mirror of the official Cumulocity Codex documentation",
   "scripts": {
-    "build": "nitro build",
-    "dev": "nitro dev",
-    "preview": "node .output/server/index.mjs",
+    "build": "wrangler deploy --dry-run",
+    "dev": "wrangler dev",
+    "preview": "wrangler dev --remote",
     "test": "vitest",
     "test:run": "vitest run",
     "lint": "eslint",
     "lint:fix": "eslint --fix",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "typegen": "wrangler types"
   },
   "dependencies": {
+    "@cloudflare/playwright": "^1.1.1",
     "@kreuzberg/html-to-markdown-wasm": "^2.25.1",
+    "@modelcontextprotocol/sdk": "catalog:",
     "@tmcp/adapter-valibot": "^0.1.5",
     "@tmcp/transport-http": "^0.8.4",
     "fuse.js": "^7.1.0",
+    "h3": "catalog:",
     "markdown-exit": "1.0.0-beta.8",
     "tmcp": "^1.19.2",
-    "valibot": "^1.2.0"
+    "unstorage": "^1.17.4",
+    "valibot": "^1.2.0",
+    "zod": "catalog:"
   },
   "devDependencies": {
-    "@rollup/plugin-wasm": "^6.2.2",
     "@schplitt/eslint-config": "^1.3.1",
     "@types/node": "^24.10.13",
     "eslint": "^10.0.0",
-    "h3": "^1.15.5",
-    "nitropack": "^2.13.1",
-    "vitest": "^4.0.18"
+    "vitest": "^4.0.18",
+    "wrangler": "catalog:"
   }
 }
