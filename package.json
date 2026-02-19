@@ -5,7 +5,7 @@
   "packageManager": "pnpm@10.26.0",
   "description": "MCP mirror of the official Cumulocity Codex documentation",
   "scripts": {
-    "build": "wrangler deploy --dry-run",
+    "build": "wrangler build",
     "dev": "wrangler dev",
     "preview": "wrangler dev --remote",
     "test": "vitest",
