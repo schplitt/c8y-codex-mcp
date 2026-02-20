@@ -4,6 +4,7 @@ import { env } from 'cloudflare:workers'
 
 const MAIN_CONTENT_SELECTOR = 'div#codex-content'
 const DEFAULT_KEEP_ALIVE_MS = 600_000
+const CONTENT_SELECTOR_TIMEOUT_MS = 30_000
 
 async function getBrowser(): Promise<Browser> {
   const browserBinding = env.BROWSER
@@ -36,7 +37,7 @@ export async function extractMainContentHTMLFromBrowserPage(
     await page.goto(renderedPageUrl, { waitUntil: 'domcontentloaded' })
 
     try {
-      await page.waitForSelector(MAIN_CONTENT_SELECTOR, { timeout: 15000 })
+      await page.waitForSelector(MAIN_CONTENT_SELECTOR, { timeout: CONTENT_SELECTOR_TIMEOUT_MS })
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error)
 
@@ -45,7 +46,7 @@ export async function extractMainContentHTMLFromBrowserPage(
           url,
           renderedPageUrl,
           selector: MAIN_CONTENT_SELECTOR,
-          timeoutMs: 15000,
+          timeoutMs: CONTENT_SELECTOR_TIMEOUT_MS,
           error: message,
         })
       }

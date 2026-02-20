@@ -12,7 +12,8 @@ export function resolveSectionMarkdown(
   }
 
   const subsectionLinks = section.subsections.flatMap((subsection) => subsection.links)
-  const links = dedupeLinksByUrl([...section.links, ...subsectionLinks])
+  const subsubsectionLinks = section.subsections.flatMap((subsection) => subsection.subsubsections.flatMap((subsubsection) => subsubsection.links))
+  const links = dedupeLinksByUrl([...section.links, ...subsectionLinks, ...subsubsectionLinks])
 
   return concatenateLinks(snapshot, links, options)
 }
@@ -35,7 +36,8 @@ export function resolveSubsectionMarkdown(
     return ''
   }
 
-  return concatenateLinks(snapshot, subsection.links, options)
+  const subsubsectionLinks = subsection.subsubsections.flatMap((subsubsection) => subsubsection.links)
+  return concatenateLinks(snapshot, dedupeLinksByUrl([...subsection.links, ...subsubsectionLinks]), options)
 }
 
 function concatenateLinks(snapshot: CodexSnapshot, links: SubsectionLink[], options: ResolveSnapshotOptions): string {

@@ -9,7 +9,7 @@ Primary goal:
 - fetch Cumulocity Codex `llms.txt`
 - parse it into a compact structure model
 - resolve linked documentation lazily with per-URL caching
-- expose MCP tools that let an LLM discover section names and request only needed content
+- expose MCP tools that let an LLM discover the best section/subsection matches and request only needed content
 
 It parses codex markdown/txt into a typed document model with:
 
@@ -23,6 +23,10 @@ It parses codex markdown/txt into a typed document model with:
     - `title`
     - `description`
     - `links[]` (`title`, `url`, `.md` only)
+    - `subsubsections[]` (derived one-level from subsection links)
+      - `title`
+      - `description`
+      - `links[]` (`title`, `url`, `.md` only)
 
   Linked docs are resolved lazily (on request) and cached per URL:
   - structure (`llms.txt`) is fetched live and not cached
@@ -53,10 +57,15 @@ server/
 │   ├── index.ts           # Basic Nitro root route
 │   └── mcp.ts             # MCP route forwarding to CodexMcpAgent
 └── utils/
+  ├── rendering/
+  │   ├── browser.ts     # Browser rendering helpers + pools
+  │   ├── chunk.ts       # Markdown chunking + chunk search helpers
+  │   ├── enrich.ts      # Raw/enriched document resolution orchestration
+  │   └── enrich-browser.ts # Browser-rendered caching/resolution helpers
     ├── c8y/
     │   ├── index.ts       # Fetch + parse llms structure entry
     │   ├── parse.ts       # Markdown parsing into typed section model
-    │   ├── enrich.ts      # Lazy linked doc resolution + per-URL KV caching + HTML→Markdown normalization
+  │   ├── enrich.ts      # Compatibility re-export to rendering/enrich
     │   ├── resolve.ts     # Section/subsection content resolution from snapshot
     │   └── types.ts       # Shared types + snapshot types
     └── mcp/
@@ -81,10 +90,12 @@ tests/
 
 ### MCP Tools
 
-- `list-codex-index`
-- `get-codex-documents`
-- `search-codex-sections` (fuzzy match on section title/description; names only)
-- `get-codex-sections` (requested sections; optional subsections per section)
+- `get-codex-structure` (same complete structure output as index from shared structure cache)
+- `query-codex` (MiniSearch-backed full-text discovery over metadata + linked raw markdown, returning section/subsection title, description, and URLs)
+- `get-codex-links` (section/subsection link discovery without fetching document content)
+- `get-codex-documents` (full raw markdown documents by URL)
+- `get-codex-document-enriched` (browser-rendered enriched retrieval fallback with line/chunk controls)
+- `codex-query-workflow` prompt (reusable MCP prompt template guiding query→link-discovery→document-fetch usage)
 
 ### Runtime
 
@@ -211,8 +222,18 @@ This section captures project-specific knowledge, tool quirks, and lessons learn
 - Keep parser, enrichment, resolver, and MCP tool logic in separate focused modules.
 - Keep data model minimal: structure graph + deduplicated `documents[url]` store.
 - Keep MCP tool outputs simple text/markdown with deterministic behavior.
-- Keep `search-codex-sections` returning section names only (no content), so callers can request content in a follow-up step.
-- For `get-codex-sections`, require at least one section and treat missing/empty subsection lists as "all subsections".
+- Keep structure tools (`get-codex-structure`, search tools) reading from the same shared structure cache object.
+- Keep `query-codex` as full-text discovery over metadata + raw markdown content, while still returning compact match metadata (title, description, URLs) so callers decide what to fetch next.
+- Keep `query-codex` input keyword-oriented (short tokens) and avoid natural-language prompts in tool calls.
+- Prefer link-based retrieval flow (`query-codex` → `get-codex-links` → `get-codex-documents`) over section/subsection bulk content fetching.
+- For deeper recall, allow one-hop expansion of internal Codex links (`#/...`) to `.md` when building search corpus.
+- For `get-codex-sections`, require at least one section and treat missing/empty subsection lists as "all subsections"; when subsections are explicitly provided, default to subsection-only docs unless `includeSectionDocuments` is set.
+- Keep raw markdown retrieval tools simple (no chunking/pagination).
+- Keep chunking + line-based pagination only in `get-codex-document-enriched`.
+- In enriched retrieval, linked-document expansion should remain optional and bounded (`maxLinkedDocuments`) to avoid oversized responses.
+- Keep rendered/enriched cache keys in a dedicated namespace so they never overwrite raw markdown cache entries.
+- Use MiniSearch for fuzzy/full-text ranking in discovery and chunk search.
+- Keep cache TTL split: raw markdown 2h, enriched markdown 12h, structure 10m.
 - Keep HTML-to-Markdown conversion best-effort in enrichment; never fail the fetch pipeline because conversion fails.
 - Keep coverage for HTML normalization with fixture-based tests so HTML detection and conversion behavior stays stable.
 - Keep Hugo placeholder replacement strict: match and replace only `{{'<one-char>'}}` placeholders.

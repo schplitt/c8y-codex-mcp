@@ -1,7 +1,7 @@
 import { MarkdownExit } from 'markdown-exit'
 import type { Token } from 'markdown-exit'
 
-import type { ParsedCodexDocument, ParsedSection, ParsedSubsection, SubsectionLink } from './types'
+import type { ParsedCodexDocument, ParsedSection, ParsedSubsection, ParsedSubsubsection, SubsectionLink } from './types'
 
 const DEFAULT_CODEX_ROOT_URL = 'https://cumulocity.com/codex/'
 
@@ -61,6 +61,7 @@ export function parseCodexLlmsMarkdown(markdown: string): ParsedCodexDocument {
           title: headingText,
           description: '',
           links: [],
+          subsubsections: [],
         }
 
         activeSection.subsections.push(subsection)
@@ -100,6 +101,7 @@ export function parseCodexLlmsMarkdown(markdown: string): ParsedCodexDocument {
       if (links.length > 0) {
         if (activeSubsection) {
           activeSubsection.links.push(...links)
+          activeSubsection.subsubsections.push(...toSubsubsections(links))
         } else {
           activeSection.links.push(...links)
         }
@@ -290,10 +292,18 @@ function isMarkdownDocUrl(url: string): boolean {
   }
 }
 
+function toSubsubsections(links: SubsectionLink[]): ParsedSubsubsection[] {
+  return links.map((link) => ({
+    title: link.title,
+    description: '',
+    links: [link],
+  }))
+}
+
 function pruneEmptySections(sections: ParsedSection[]): ParsedSection[] {
   return sections
     .map((section): ParsedSection => {
-      const subsections = section.subsections.filter((subsection) => subsection.links.length > 0)
+      const subsections = section.subsections.filter((subsection) => subsection.links.length > 0 || subsection.subsubsections.length > 0)
 
       return {
         ...section,
