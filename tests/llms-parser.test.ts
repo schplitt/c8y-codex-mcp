@@ -4,7 +4,7 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 import { fetchParseAndEnrichCodexLlms } from '../server/utils/c8y'
-import { enrichCodexDocumentWithLinkedMarkdown } from '../server/utils/c8y/enrich'
+import { enrichCodexDocumentWithLinkedMarkdown } from '../server/utils/rendering/enrich'
 import { parseCodexLlmsMarkdown } from '../server/utils/c8y/parse'
 import { resolveSectionMarkdown, resolveSubsectionMarkdown } from '../server/utils/c8y/resolve'
 

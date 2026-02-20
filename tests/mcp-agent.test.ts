@@ -9,7 +9,7 @@ import {
   collectRequestedSectionUrls,
   getSectionQueryIncludeDocumentsDefault,
 } from '../server/utils/mcp/sections'
-import { chunkMarkdownByHeadings, searchChunks, sliceLines } from '../server/utils/c8y/chunk'
+import { chunkMarkdownByHeadings, searchChunks, sliceLines } from '../server/utils/rendering/chunk'
 import type { DocumentEntry, ParsedCodexDocument, ParsedSection } from '../server/utils/c8y/types'
 
 const structure: ParsedCodexDocument = {
