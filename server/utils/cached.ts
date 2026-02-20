@@ -1,6 +1,6 @@
 import { createCachedFunction } from './cache-fn'
 import { fetchAndParseCodexLlms } from './c8y'
-import { resolveDocuments } from './c8y/enrich'
+import { resolveEnrichedDocuments, resolveRawDocuments } from './rendering/enrich'
 import type { ResolveDocumentsOptions } from './c8y/types'
 
 const STRUCTURE_CACHE_KEY = 'codex:structure:v1'
@@ -15,5 +15,17 @@ export const useCodexStructure = createCachedFunction(
 )
 
 export async function useCodexDocuments(urls: string[], options: ResolveDocumentsOptions = {}) {
-  return resolveDocuments(urls, options)
+  if (options.renderHtml) {
+    return resolveEnrichedDocuments(urls)
+  }
+
+  return resolveRawDocuments(urls)
+}
+
+export async function useCodexRawDocuments(urls: string[]) {
+  return resolveRawDocuments(urls)
+}
+
+export async function useCodexEnrichedDocuments(urls: string[]) {
+  return resolveEnrichedDocuments(urls)
 }

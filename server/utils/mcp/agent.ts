@@ -1,42 +1,65 @@
-import Fuse from 'fuse.js'
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { McpAgent } from 'agents/mcp'
-import { z } from 'zod'
+import * as z from 'zod'
 import pkgjson from '../../../package.json'
-import { useCodexDocuments, useCodexStructure } from '../cached'
-import type { DocumentEntry, ParsedSection } from '../c8y/types'
+import {
+  useCodexEnrichedDocuments,
+  useCodexRawDocuments,
+  useCodexStructure,
+} from '../cached'
+import {
+  collectLinkedUrlsFromDocuments,
+  extractCodexMarkdownLinks,
+  normalizeCodexLinkToMarkdown,
+  toHumanReadableCodexUrl,
+} from '../c8y/links'
+import { chunkMarkdownByHeadings, searchChunks, sliceLines, splitChunksByLines } from '../rendering/chunk'
+import { buildQueryCodexOutput, formatStructureMarkdown, resolveLinkedDocument } from './format'
+import { buildSearchCandidates, collectAllStructureUrls, rankMatchesByQuery } from './search'
 
-function resolveLinkedDocument(documentEntry: DocumentEntry | undefined, url: string): string {
-  if (documentEntry?.ok && documentEntry.content) {
-    return documentEntry.content
+const DEFAULT_SEARCH_LIMIT = 5
+const DEFAULT_QUERY_MAX_LINKED_DOCS = 160
+const DEFAULT_CONTENT_CONFIDENCE = 80
+const DEFAULT_ENRICHED_CHUNK_MAX_LINES = 80
+const DEFAULT_ENRICHED_MAX_LINES = 100
+const MAX_ENRICHED_MAX_LINES = 250
+const DEFAULT_ENRICHED_LINKED_DOCS = 8
+const MAX_ENRICHED_LINKED_DOCS = 20
+
+function normalizeThreshold(confidenceThreshold?: number): number {
+  if (!confidenceThreshold || Number.isNaN(confidenceThreshold)) {
+    return DEFAULT_CONTENT_CONFIDENCE
   }
 
-  if (!documentEntry) {
-    return `Document not found in snapshot for ${url}.`
-  }
-
-  return `Failed to fetch document content. Status: ${documentEntry.statusCode} ${documentEntry.statusText}. Error: ${documentEntry.error}`
+  return Math.min(99, Math.max(50, confidenceThreshold))
 }
 
-function collectRequestedSectionUrls(section: ParsedSection, requestedSubsections?: string[]): string[] {
-  const urls = new Set<string>(section.links.map((link) => link.url))
-
-  const subsectionTitles = requestedSubsections && requestedSubsections.length > 0
-    ? requestedSubsections
-    : section.subsections.map((subsection) => subsection.title)
-
-  for (const subsectionTitle of subsectionTitles) {
-    const subsection = section.subsections.find((candidate) => candidate.title === subsectionTitle)
-    if (!subsection) {
-      continue
-    }
-
-    for (const link of subsection.links) {
-      urls.add(link.url)
-    }
+function normalizeTopK(topK?: number): number {
+  if (!topK || Number.isNaN(topK)) {
+    return 3
   }
 
-  return [...urls]
+  return Math.min(10, Math.max(1, topK))
+}
+
+function normalizeMaxLines(maxLines?: number): number {
+  if (!maxLines || Number.isNaN(maxLines)) {
+    return DEFAULT_ENRICHED_MAX_LINES
+  }
+
+  return Math.min(MAX_ENRICHED_MAX_LINES, Math.max(1, maxLines))
+}
+
+function normalizeMaxLinkedDocuments(maxLinkedDocuments?: number): number {
+  if (!maxLinkedDocuments || Number.isNaN(maxLinkedDocuments)) {
+    return DEFAULT_ENRICHED_LINKED_DOCS
+  }
+
+  return Math.min(MAX_ENRICHED_LINKED_DOCS, Math.max(1, maxLinkedDocuments))
+}
+
+function toFetchUrl(url: string): string {
+  return normalizeCodexLinkToMarkdown(url) ?? url
 }
 
 export class CodexMcpAgent extends McpAgent {
@@ -48,27 +71,16 @@ export class CodexMcpAgent extends McpAgent {
 
   async init() {
     this.server.registerTool(
-      'list-codex-index',
+      'get-codex-structure',
       {
-        title: 'List Codex Index',
-        description: 'List the Codex documentation index (sections and subsections) with titles, descriptions, and links.',
+        title: 'Get Codex Structure',
+        description: 'Use this first for broad discovery. Returns the complete Codex section/subsection map with links, titles, and descriptions from the shared structure cache.',
       },
       async () => {
         const structure = await useCodexStructure()
-        let toolOutput = `# ${structure.title}\n\n${structure.description}\n\n`
-        for (const section of structure.sections) {
-          toolOutput += `## ${section.title}\n${
-            section.links.map((link) => `[${link.title}](${link.url})`).join('\n')
-          }\n${section.description}\n\n`
-          for (const subsection of section.subsections) {
-            toolOutput += `### ${subsection.title}\n${
-              subsection.links.map((link) => `[${link.title}](${link.url})`).join('\n')
-            }\n${subsection.description}\n\n`
-          }
-        }
 
         return {
-          content: [{ type: 'text', text: toolOutput }],
+          content: [{ type: 'text', text: formatStructureMarkdown(structure) }],
         }
       },
     )
@@ -77,88 +89,24 @@ export class CodexMcpAgent extends McpAgent {
       'get-codex-documents',
       {
         title: 'Get Codex Documents',
-        description: 'Get full stored document content by one or more Codex document URLs.',
+        description: 'Fetch full raw markdown by URL when you already know the exact doc links. Prefer query-codex or get-codex-structure first to discover relevant URLs.',
         inputSchema: {
           urls: z.array(z.string()),
         },
       },
       async ({ urls }) => {
-        const documents = await useCodexDocuments(urls)
-
-        let resultMD = ''
-        for (const url of urls) {
-          const documentEntry = documents[url]
-          if (documentEntry) {
-            if (documentEntry.ok && documentEntry.content) {
-              resultMD += `# Document: ${url}\n\n`
-              resultMD += `${documentEntry.content}\n\n`
-            } else {
-              resultMD += `# Document: ${url}\n\n`
-              resultMD += `Failed to fetch document content. Status: ${documentEntry.statusCode} ${documentEntry.statusText}. Error: ${documentEntry.error}\n\n`
-            }
-          } else {
-            resultMD += `# Document: ${url}\n\n`
-            resultMD += 'Document not found in snapshot.\n\n'
-          }
-        }
-
-        return {
-          content: [{ type: 'text', text: resultMD }],
-        }
-      },
-    )
-
-    this.server.registerTool(
-      'search-codex-sections',
-      {
-        title: 'Search Codex Sections',
-        description: 'Fuzzy-search Codex section titles and descriptions using one or more patterns and return section names only.',
-        inputSchema: {
-          patterns: z.array(z.string()).min(1),
-          limitPerPattern: z.number().int().min(1).max(25).optional(),
-        },
-      },
-      async ({ patterns, limitPerPattern }) => {
-        const structure = await useCodexStructure()
-        const sections = structure.sections.map((section) => ({
-          title: section.title,
-          description: section.description,
+        const fetchEntries = urls.map((inputUrl) => ({
+          inputUrl,
+          fetchUrl: toFetchUrl(inputUrl),
         }))
 
-        const fuse = new Fuse(sections, {
-          keys: ['title', 'description'],
-          isCaseSensitive: false,
-          includeScore: true,
-          threshold: 0.4,
-          ignoreLocation: true,
-        })
+        const documents = await useCodexRawDocuments(fetchEntries.map((entry) => entry.fetchUrl))
 
-        const effectiveLimit = limitPerPattern ?? 8
-        const byPattern: Array<{ pattern: string, sectionNames: string[] }> = []
-        const allNames = new Set<string>()
-
-        for (const pattern of patterns) {
-          const matches = fuse.search(pattern, { limit: effectiveLimit })
-          const sectionNames = matches.map((match) => match.item.title)
-
-          for (const name of sectionNames) {
-            allNames.add(name)
-          }
-
-          byPattern.push({ pattern, sectionNames })
-        }
-
-        let resultMD = '# Matching Section Names\n\n'
-        resultMD += Array.from(allNames).length > 0
-          ? `${Array.from(allNames).map((name) => `- ${name}`).join('\n')}\n\n`
-          : 'No section names matched.\n\n'
-
-        resultMD += '## Results by Pattern\n\n'
-        for (const patternResult of byPattern) {
-          resultMD += `### ${patternResult.pattern}\n`
-          resultMD += patternResult.sectionNames.length > 0
-            ? `${patternResult.sectionNames.map((name) => `- ${name}`).join('\n')}\n\n`
-            : '- No matches\n\n'
+        let resultMD = '# Codex Documents\n\n'
+        for (const entry of fetchEntries) {
+          const documentEntry = documents[entry.fetchUrl]
+          resultMD += `# Document: ${toHumanReadableCodexUrl(entry.inputUrl)}\n\n`
+          resultMD += `${resolveLinkedDocument(documentEntry, toHumanReadableCodexUrl(entry.inputUrl))}\n\n`
         }
 
         return {
@@ -168,85 +116,185 @@ export class CodexMcpAgent extends McpAgent {
     )
 
     this.server.registerTool(
-      'get-codex-sections',
+      'query-codex',
       {
-        title: 'Get Codex Sections',
-        description: 'Return content for requested Codex sections by title. At least one section is required. Subsections are optional per section; if omitted or empty, all subsections for that section are returned.',
+        title: 'Query Codex',
+        description: 'Primary discovery tool. Keyword search only (not natural-language questions). Use short terms like component names, APIs, service names, and features, then fetch details via get-codex-documents.',
         inputSchema: {
-          sections: z.array(z.object({
-            title: z.string(),
-            subsections: z.array(z.string()).optional(),
-          })).min(1),
+          query: z.string().min(2).describe('Space-separated keyword terms only, for example: "services app-state permissions".'),
         },
       },
-      async ({ sections }) => {
-        if (sections.length === 0) {
+      async ({ query }) => {
+        const normalizedQuery = query
+          .split(/\s+/)
+          .map((keyword) => keyword.trim())
+          .filter(Boolean)
+          .join(' ')
+
+        if (!normalizedQuery) {
           return {
-            content: [{ type: 'text', text: 'At least one section must be provided.' }],
+            content: [{ type: 'text', text: 'Provide keyword search input via `query` as a space-separated string.' }],
             isError: true,
           }
         }
 
         const structure = await useCodexStructure()
+        const structureFetchUrls = collectAllStructureUrls(structure).map(toFetchUrl)
+        const baseDocuments = await useCodexRawDocuments(structureFetchUrls)
+        const linkedUrls = collectLinkedUrlsFromDocuments(baseDocuments, DEFAULT_QUERY_MAX_LINKED_DOCS)
+        const linkedDocuments = linkedUrls.length > 0
+          ? await useCodexRawDocuments(linkedUrls.map(toFetchUrl))
+          : {}
+        const candidates = buildSearchCandidates(structure, {
+          ...baseDocuments,
+          ...linkedDocuments,
+        })
+        const matches = rankMatchesByQuery(candidates, normalizedQuery, DEFAULT_SEARCH_LIMIT)
 
-        const requestedUrls = new Set<string>()
+        return {
+          content: [{ type: 'text', text: buildQueryCodexOutput(normalizedQuery, matches) }],
+        }
+      },
+    )
 
-        for (const requestedSection of sections) {
-          const section = structure.sections.find((candidate) => candidate.title === requestedSection.title)
-          if (!section) {
-            continue
-          }
+    this.server.registerTool(
+      'get-codex-document-enriched',
+      {
+        title: 'Get Codex Document Enriched',
+        description: 'Expensive fallback tool: browser-rendered enriched markdown with optional chunk query and line-based retrieval. Uses separate rendered cache keys from raw markdown cache.',
+        inputSchema: {
+          url: z.string(),
+          query: z.string().optional(),
+          confidenceThreshold: z.number().int().min(50).max(99).optional(),
+          topK: z.number().int().min(1).max(10).optional(),
+          includeLinkedDocuments: z.boolean().optional(),
+          maxLinkedDocuments: z.number().int().min(1).max(MAX_ENRICHED_LINKED_DOCS).optional(),
+          startLine: z.number().int().min(1).optional(),
+          endLine: z.number().int().min(1).optional(),
+          maxLines: z.number().int().min(1).max(MAX_ENRICHED_MAX_LINES).optional(),
+        },
+      },
+      async ({ url, query, confidenceThreshold, topK, includeLinkedDocuments, maxLinkedDocuments, startLine, endLine, maxLines }) => {
+        const fetchUrl = toFetchUrl(url)
+        const enrichedDocuments = await useCodexEnrichedDocuments([fetchUrl])
+        const entry = enrichedDocuments[fetchUrl]
 
-          for (const url of collectRequestedSectionUrls(section, requestedSection.subsections)) {
-            requestedUrls.add(url)
+        if (!entry?.ok || !entry.content) {
+          return {
+            content: [{ type: 'text', text: `# Enriched Document: ${toHumanReadableCodexUrl(url)}\n\n${resolveLinkedDocument(entry, toHumanReadableCodexUrl(url))}` }],
+            isError: true,
           }
         }
 
-        const documents = await useCodexDocuments([...requestedUrls])
+        const content = entry.content
+        const lines = content.split('\n')
+        const totalLines = lines.length
+        const effectiveStartLine = startLine ?? 1
 
-        let resultMD = `# ${structure.title}\n\n`
+        let effectiveEndLine: number
+        let nextStartLine: number | null = null
 
-        for (const requestedSection of sections) {
-          const section = structure.sections.find((candidate) => candidate.title === requestedSection.title)
+        if (typeof endLine === 'number') {
+          effectiveEndLine = Math.max(effectiveStartLine, endLine)
+        } else {
+          const effectiveMaxLines = normalizeMaxLines(maxLines)
+          effectiveEndLine = Math.min(totalLines, effectiveStartLine + effectiveMaxLines - 1)
+          nextStartLine = effectiveEndLine < totalLines ? effectiveEndLine + 1 : null
+        }
 
-          if (!section) {
-            resultMD += `## ${requestedSection.title}\nSection not found in snapshot.\n\n`
-            continue
-          }
+        const selectedContent = sliceLines(content, effectiveStartLine, effectiveEndLine)
 
-          resultMD += `## ${section.title}\n${section.description}\n\n`
+        let resultMD = `# Enriched Document: ${toHumanReadableCodexUrl(url)}\n\n`
+        resultMD += `- totalLines: ${totalLines}\n`
+        resultMD += `- startLine: ${effectiveStartLine}\n`
+        resultMD += `- endLine: ${effectiveEndLine}\n`
+        resultMD += `- returnedLines: ${Math.max(0, effectiveEndLine - effectiveStartLine + 1)}\n`
+        resultMD += `- nextStartLine: ${nextStartLine === null ? 'null' : nextStartLine}\n\n`
 
-          if (section.links.length > 0) {
-            resultMD += '### Section Documents\n\n'
-            for (const link of section.links) {
-              resultMD += `#### ${link.title}\nURL: ${link.url}\n\n`
-              resultMD += `${resolveLinkedDocument(documents[link.url], link.url)}\n\n`
+        if (query && query.trim()) {
+          const matches = searchChunks(
+            splitChunksByLines(
+              chunkMarkdownByHeadings(content),
+              DEFAULT_ENRICHED_CHUNK_MAX_LINES,
+            ),
+            query,
+            normalizeThreshold(confidenceThreshold),
+            normalizeTopK(topK),
+          )
+
+          resultMD += `## Query Matches: ${query}\n\n`
+          if (matches.length === 0) {
+            resultMD += '- No chunk matches above confidence threshold.\n\n'
+          } else {
+            for (const match of matches) {
+              resultMD += `- ${match.chunk.heading} — lines ${match.chunk.startLine}-${match.chunk.endLine}\n`
             }
+            resultMD += '\n'
           }
+        }
 
-          const subsectionTitles = requestedSection.subsections && requestedSection.subsections.length > 0
-            ? requestedSection.subsections
-            : section.subsections.map((subsection) => subsection.title)
+        resultMD += '## Content\n\n'
+        resultMD += `${selectedContent}\n`
 
-          for (const subsectionTitle of subsectionTitles) {
-            const subsection = section.subsections.find((candidate) => candidate.title === subsectionTitle)
+        if (includeLinkedDocuments) {
+          const linkedUrls = extractCodexMarkdownLinks(content)
+            .filter((linkedUrl) => linkedUrl !== url)
+            .slice(0, normalizeMaxLinkedDocuments(maxLinkedDocuments))
 
-            if (!subsection) {
-              resultMD += `### ${subsectionTitle}\nSubsection not found in section ${section.title}.\n\n`
-              continue
-            }
+          if (linkedUrls.length > 0) {
+            const linkedFetchUrls = linkedUrls.map(toFetchUrl)
+            const linkedDocuments = await useCodexRawDocuments(linkedFetchUrls)
+            resultMD += '\n## Linked Documents\n\n'
 
-            resultMD += `### ${subsection.title}\n${subsection.description}\n\n`
-
-            for (const link of subsection.links) {
-              resultMD += `#### ${link.title}\nURL: ${link.url}\n\n`
-              resultMD += `${resolveLinkedDocument(documents[link.url], link.url)}\n\n`
+            for (let index = 0; index < linkedUrls.length; index += 1) {
+              const linkedUrl = linkedUrls[index]!
+              const linkedFetchUrl = linkedFetchUrls[index]!
+              resultMD += `### ${toHumanReadableCodexUrl(linkedUrl)}\n`
+              resultMD += `${resolveLinkedDocument(linkedDocuments[linkedFetchUrl], toHumanReadableCodexUrl(linkedUrl))}\n\n`
             }
           }
         }
 
         return {
           content: [{ type: 'text', text: resultMD }],
+        }
+      },
+    )
+
+    this.server.registerPrompt(
+      'codex-query-workflow',
+      {
+        title: 'Codex Query Workflow',
+        description: 'Reusable prompt template for discovering and retrieving Codex docs through MCP tools.',
+        argsSchema: {
+          question: z.string().optional(),
+        },
+      },
+      async ({ question }) => {
+        const normalizedQuestion = question?.trim()
+
+        return {
+          description: 'Prompt for querying Cumulocity Codex through MCP tools in a deterministic flow.',
+          messages: [
+            {
+              role: 'user',
+              content: {
+                type: 'text',
+                text: [
+                  'You are querying Cumulocity Codex documentation via MCP.',
+                  'Workflow:',
+                  '1) Start with query-codex using keyword terms only (not natural language).',
+                  '2) Review top matches and collect target links with get-codex-links.',
+                  '3) Fetch details with get-codex-documents using those links.',
+                  '4) Do not use section/subsection retrieval; link-level retrieval is the supported flow.',
+                  '5) Use get-codex-document-enriched only as a rare fallback when content appears as HTML components in docs.',
+                  '6) Enrichment is very expensive; avoid it unless needed.',
+                  '7) Example: the full icons list may only be visible through enrichment because it is rendered as an HTML component.',
+                  normalizedQuestion ? `User question: ${normalizedQuestion}` : 'User question: (provide the current question)',
+                ].join('\n'),
+              },
+            },
+          ],
         }
       },
     )

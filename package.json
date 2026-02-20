@@ -20,9 +20,9 @@
     "@kreuzberg/html-to-markdown-wasm": "^2.25.1",
     "@modelcontextprotocol/sdk": "^1.26.0",
     "agents": "^0.4.1",
-    "fuse.js": "^7.1.0",
     "h3": "1.15.5",
     "markdown-exit": "1.0.0-beta.8",
+    "minisearch": "^7.2.0",
     "unstorage": "^1.17.4",
     "zod": "^4.3.6"
   },

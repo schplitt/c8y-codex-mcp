@@ -1,5 +1,5 @@
-import { enrichCodexDocumentWithLinkedMarkdown } from './enrich'
 import { parseCodexLlmsMarkdown } from './parse'
+import { enrichCodexDocumentWithLinkedMarkdown } from '../rendering/enrich'
 import type { CodexSnapshot, ParsedCodexDocument } from './types'
 
 const DEFAULT_LLMS_URL = 'https://cumulocity.com/codex/llms.txt'

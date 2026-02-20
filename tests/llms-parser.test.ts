@@ -77,6 +77,7 @@ describe('parseCodexLlmsMarkdown', () => {
     expect(parsed.sections[0]?.subsections).toHaveLength(1)
     expect(parsed.sections[0]?.subsections[0]?.title).toBe('Keep Sub')
     expect(parsed.sections[0]?.subsections[0]?.links).toHaveLength(1)
+    expect(parsed.sections[0]?.subsections[0]?.subsubsections).toHaveLength(1)
   })
 })
 
@@ -101,6 +102,7 @@ describe('enrichCodexDocumentWithLinkedMarkdown', () => {
                 { title: 'Shared duplicate', url: sharedUrl },
                 { title: 'Missing', url: missingUrl },
               ],
+              subsubsections: [],
             },
           ],
         },
@@ -197,6 +199,7 @@ describe('resolve helpers', () => {
                 title: 'Sub A',
                 description: 'sub',
                 links: [{ title: 'Missing Doc', url: 'https://example.com/missing.md' }],
+                subsubsections: [],
               },
             ],
           },

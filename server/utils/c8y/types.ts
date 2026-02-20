@@ -7,6 +7,13 @@ export interface ParsedSubsection {
   title: string
   description: string
   links: SubsectionLink[]
+  subsubsections: ParsedSubsubsection[]
+}
+
+export interface ParsedSubsubsection {
+  title: string
+  description: string
+  links: SubsectionLink[]
 }
 
 export interface ParsedSection {
