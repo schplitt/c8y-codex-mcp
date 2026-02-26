@@ -29,7 +29,7 @@ It parses codex markdown/txt into a typed document model with:
       - `links[]` (`title`, `url`, `.md` only)
 
   Linked docs are resolved lazily (on request) and cached per URL:
-  - structure (`llms.txt`) is fetched live and not cached
+  - structure (`llms.txt`) is cached in shared cache with a short TTL
   - document content is cached independently in KV with TTL
   - only successful browser-rendered content is persisted in cache
 
@@ -71,9 +71,13 @@ server/
     └── mcp/
       └── agent.ts       # Cloudflare McpAgent class + MCP tools
 tests/
+├── c8y-links.test.ts
+├── html-parsing.test.ts
 ├── llms-parser.test.ts
-├── enrich-html-conversion.test.ts
+├── mcp-agent.test.ts
+├── mcp-format.test.ts
 └── snapshots/
+  ├── icons.html
   ├── llms.txt
   └── html.html
 ```
@@ -92,17 +96,16 @@ tests/
 
 - `get-codex-structure` (same complete structure output as index from shared structure cache)
 - `query-codex` (MiniSearch-backed full-text discovery over metadata + linked raw markdown, returning section/subsection title, description, and URLs)
-- `get-codex-links` (section/subsection link discovery without fetching document content)
 - `get-codex-documents` (full raw markdown documents by URL)
 - `get-codex-document-enriched` (browser-rendered enriched retrieval fallback with line/chunk controls)
-- `codex-query-workflow` prompt (reusable MCP prompt template guiding query→link-discovery→document-fetch usage)
+- `codex-query-workflow` prompt (reusable MCP prompt template guiding query→document-fetch usage)
 
 ### Runtime
 
 - Nitro server with `srcDir: "server"`
 - MCP endpoint `/mcp` served by `CodexMcpAgent.serve('/mcp')` from `server/routes/mcp.ts`
 - MCP runtime uses Durable Object-backed `agents/mcp` (`CodexMcpAgent` class)
-- `llms.txt` structure is fetched live (no persistent structure cache)
+- `llms.txt` structure is served through shared cache (10m TTL)
 - linked doc content is cached per URL in KV with TTL
 
 ## Development
@@ -225,9 +228,8 @@ This section captures project-specific knowledge, tool quirks, and lessons learn
 - Keep structure tools (`get-codex-structure`, search tools) reading from the same shared structure cache object.
 - Keep `query-codex` as full-text discovery over metadata + raw markdown content, while still returning compact match metadata (title, description, URLs) so callers decide what to fetch next.
 - Keep `query-codex` input keyword-oriented (short tokens) and avoid natural-language prompts in tool calls.
-- Prefer link-based retrieval flow (`query-codex` → `get-codex-links` → `get-codex-documents`) over section/subsection bulk content fetching.
+- Prefer link-based retrieval flow (`query-codex` → `get-codex-documents`) with `get-codex-document-enriched` as optional fallback.
 - For deeper recall, allow one-hop expansion of internal Codex links (`#/...`) to `.md` when building search corpus.
-- For `get-codex-sections`, require at least one section and treat missing/empty subsection lists as "all subsections"; when subsections are explicitly provided, default to subsection-only docs unless `includeSectionDocuments` is set.
 - Keep raw markdown retrieval tools simple (no chunking/pagination).
 - Keep chunking + line-based pagination only in `get-codex-document-enriched`.
 - In enriched retrieval, linked-document expansion should remain optional and bounded (`maxLinkedDocuments`) to avoid oversized responses.
