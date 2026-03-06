@@ -74,7 +74,13 @@ export class CodexMcpAgent extends McpAgent {
       'get-codex-structure',
       {
         title: 'Get Codex Structure',
-        description: 'Use this first for broad discovery. Returns the complete Codex section/subsection map with links, titles, and descriptions from the shared structure cache.',
+        description: [
+          '🔑 ALWAYS call this FIRST before any other tool.',
+          'Returns the complete Codex section/subsection map: titles, descriptions, and all linked URLs.',
+          'This gives you a full overview of what is available so you can plan exactly which sections and subtopics to fetch.',
+          'Without this you will miss relevant subtopics and waste queries on the wrong areas.',
+          'The result is cached and fast — there is no cost to calling it first every time.',
+        ].join(' '),
       },
       async () => {
         const structure = await useCodexStructure()
@@ -340,10 +346,10 @@ export class CodexMcpAgent extends McpAgent {
                   'You are querying Cumulocity Codex documentation via MCP.',
                   '',
                   'Workflow:',
-                  '1) Use query-codex with keyword terms only (NOT natural language). Pass MULTIPLE queries at once for different aspects of the same topic, e.g. ["icons", "design system assets"]. Each query is matched independently so do not combine unrelated terms in one query string.',
-                  '2) Review all returned matches. Note ALL listed URLs — do NOT skip subtopic URLs.',
-                  '3) Fetch ALL relevant URLs with get-codex-documents in a single call. Parent topic docs (/topic) do NOT contain subtopic content — each subtopic (/topic/subtopic1, /topic/subtopic2, ...) must be fetched individually.',
-                  '4) If further discovery is needed, use get-codex-structure for a full section/subsection map.',
+                  '1) ALWAYS start with get-codex-structure. It returns the full section/subsection map with all available URLs. Read it carefully — it tells you what exists and where to look before you query or fetch anything.',
+                  '2) Use query-codex with keyword terms only (NOT natural language). Pass MULTIPLE queries at once for different aspects of the same topic, e.g. ["icons", "design system assets"]. Each query is matched independently so do not combine unrelated terms in one query string.',
+                  '3) Review all returned matches. Note ALL listed URLs — do NOT skip subtopic URLs.',
+                  '4) Fetch ALL relevant URLs with get-codex-documents in a single call. Parent topic docs (/topic) do NOT contain subtopic content — each subtopic (/topic/subtopic1, /topic/subtopic2, ...) must be fetched individually.',
                   '5) Only use get-codex-document-enriched as a LAST RESORT when page content is visibly missing because it is rendered by HTML components in the browser (e.g. icon galleries). In all other cases use get-codex-documents.',
                   '6) get-codex-document-enriched is expensive. Never use it by default or out of habit.',
                   '',
