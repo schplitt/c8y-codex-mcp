@@ -109,23 +109,9 @@ interface BrowserSlot {
   connectPromise: Promise<void> | null
 }
 
-interface SharedPoolState {
-  slots: BrowserSlot[]
-  nextBrowserIndex: number
-}
-
-const sharedPoolStateByKey = new Map<string, SharedPoolState>()
-
-function getSharedPoolState(browserCount: number, pagesPerBrowserConcurrency: number): SharedPoolState {
-  const key = `${browserCount}:${pagesPerBrowserConcurrency}`
-  const existingState = sharedPoolStateByKey.get(key)
-
-  if (existingState) {
-    return existingState
-  }
-
-  const state: SharedPoolState = {
-    slots: new Array(browserCount).fill(null).map(() => ({
+function createPoolState(browserCount: number, pagesPerBrowserConcurrency: number) {
+  return {
+    slots: new Array(browserCount).fill(null).map((): BrowserSlot => ({
       sessionId: null,
       browser: null,
       semaphore: new Semaphore(pagesPerBrowserConcurrency),
@@ -133,9 +119,6 @@ function getSharedPoolState(browserCount: number, pagesPerBrowserConcurrency: nu
     })),
     nextBrowserIndex: 0,
   }
-
-  sharedPoolStateByKey.set(key, state)
-  return state
 }
 
 async function ensureSlotBrowser(slot: BrowserSlot): Promise<Browser | null> {
@@ -186,7 +169,7 @@ export function createLazyBrowserRenderPool(
   browserCount: number,
   pagesPerBrowserConcurrency: number,
 ): BrowserRenderPool {
-  const state = getSharedPoolState(browserCount, pagesPerBrowserConcurrency)
+  const state = createPoolState(browserCount, pagesPerBrowserConcurrency)
 
   const render = async (url: string): Promise<string | null> => {
     const browserIndex = state.nextBrowserIndex
