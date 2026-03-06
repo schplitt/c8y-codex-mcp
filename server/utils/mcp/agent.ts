@@ -16,6 +16,7 @@ import {
 import { chunkMarkdownByHeadings, searchChunks, sliceLines, splitChunksByLines } from '../rendering/chunk'
 import { buildQueryCodexOutput, formatStructureMarkdown, resolveLinkedDocument } from './format'
 import { buildSearchCandidates, collectAllStructureUrls, rankMatchesByQuery } from './search'
+import type { RankedSearchMatch } from './search'
 
 const DEFAULT_SEARCH_LIMIT = 5
 const DEFAULT_QUERY_MAX_LINKED_DOCS = 160
