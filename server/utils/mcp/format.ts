@@ -70,14 +70,21 @@ function toCandidateLabel(candidate: SearchCandidate): string {
   return candidate.title
 }
 
-export function buildQueryCodexOutput(query: string, matches: RankedSearchMatch[]): string {
+export function buildQueryCodexOutput(queries: string[], matches: RankedSearchMatch[]): string {
   let output = '# Query Codex\n\n'
-  output += `- query: ${query}\n\n`
+  output += `- queries: ${queries.join(', ')}\n\n`
 
   if (matches.length === 0) {
     output += 'No matching section/subsection documents found.\n'
     return output
   }
+
+  output += [
+    '> **Important:** Fetch ALL listed URLs with `get-codex-documents`.',
+    'Parent topics (e.g. `/topic`) do NOT contain subtopic content.',
+    'Each subtopic URL (e.g. `/topic/subtopic1`, `/topic/subtopic2`) must be fetched separately.',
+  ].join(' ')
+  output += '\n\n'
 
   for (const match of matches) {
     const candidate = match.candidate
