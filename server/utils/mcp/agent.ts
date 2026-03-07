@@ -74,7 +74,13 @@ export class CodexMcpAgent extends McpAgent {
       'get-codex-structure',
       {
         title: 'Get Codex Structure',
-        description: 'Use this first for broad discovery. Returns the complete Codex section/subsection map with links, titles, and descriptions from the shared structure cache.',
+        description: [
+          'ALWAYS call this FIRST before any other tool.',
+          'Returns the complete Codex section/subsection map: titles, descriptions, and all linked URLs.',
+          'This gives you a full overview of what is available so you can plan exactly which sections and subtopics to fetch.',
+          'Without this you will miss relevant subtopics and waste queries on the wrong areas.',
+          'The result is cached and fast — there is no cost to calling it first every time.',
+        ].join(' '),
       },
       async () => {
         const structure = await useCodexStructure()
@@ -89,7 +95,15 @@ export class CodexMcpAgent extends McpAgent {
       'get-codex-documents',
       {
         title: 'Get Codex Documents',
-        description: 'Fetch full raw markdown by URL when you already know the exact doc links. Prefer query-codex or get-codex-structure first to discover relevant URLs.',
+        description: [
+          'Primary retrieval tool. Fetch full raw markdown for one or more URLs at once.',
+          'Use after query-codex or get-codex-structure to retrieve discovered URLs.',
+          'Choose the returned URLs that are relevant to your task.',
+          'Do NOT assume a parent topic document (e.g. /topic) contains content from its subtopics.',
+          'If you need a subtopic, fetch that specific subtopic URL (e.g. /topic/subtopic1, /topic/subtopic2) explicitly.',
+          'This tool is fast and preferred in almost all cases.',
+          'Only fall back to get-codex-document-enriched when content is HTML-rendered and unreadable as plain markdown.',
+        ].join(' '),
         inputSchema: {
           urls: z.array(z.string()),
         },
@@ -119,21 +133,37 @@ export class CodexMcpAgent extends McpAgent {
       'query-codex',
       {
         title: 'Query Codex',
-        description: 'Primary discovery tool. Keyword search only (not natural-language questions). Use short terms like component names, APIs, service names, and features, then fetch details via get-codex-documents.',
+        description: [
+          'Keyword-only full-text search (NOT semantic/NLP search).',
+          'Use short, specific keyword terms — component names, API names, service names, feature names.',
+          'To cover a topic from multiple angles, pass MULTIPLE queries at once (e.g. ["icons", "design system assets"]).',
+          'Each query is matched independently; results are merged and deduplicated.',
+          'Do NOT combine unrelated terms into a single query string — that will match documents containing ALL those terms and miss relevant results.',
+          'Results include section, subsection, and subtopic URLs.',
+          'After querying, inspect the returned URLs and fetch the ones relevant to your task with get-codex-documents.',
+          'If a needed result is a subtopic URL, fetch that URL directly — parent docs do not include subtopic content.',
+          'Only use get-codex-document-enriched as a last resort for pages with HTML-rendered content (e.g. icon lists).',
+        ].join(' '),
         inputSchema: {
-          query: z.string().min(2).describe('Space-separated keyword terms only, for example: "services app-state permissions".'),
+          queries: z.array(z.string().min(2)).min(1).describe(
+            'One or more independent keyword-term sets. Each entry is a space-separated keyword string, e.g. ["icons", "design system assets"]. Run multiple queries to cover different aspects of the same topic.',
+          ),
         },
       },
-      async ({ query }) => {
-        const normalizedQuery = query
-          .split(/\s+/)
-          .map((keyword) => keyword.trim())
+      async ({ queries }) => {
+        const normalizedQueries = queries
+          .map((q) =>
+            q
+              .split(/\s+/)
+              .map((keyword) => keyword.trim())
+              .filter(Boolean)
+              .join(' '),
+          )
           .filter(Boolean)
-          .join(' ')
 
-        if (!normalizedQuery) {
+        if (normalizedQueries.length === 0) {
           return {
-            content: [{ type: 'text', text: 'Provide keyword search input via `query` as a space-separated string.' }],
+            content: [{ type: 'text', text: 'Provide at least one keyword query in the `queries` array.' }],
             isError: true,
           }
         }
@@ -149,10 +179,16 @@ export class CodexMcpAgent extends McpAgent {
           ...baseDocuments,
           ...linkedDocuments,
         })
-        const matches = rankMatchesByQuery(candidates, normalizedQuery, DEFAULT_SEARCH_LIMIT)
+
+        // Keep matches grouped per input query so callers can see which keyword set
+        // produced which results instead of interpreting one merged result list.
+        const queryGroups = normalizedQueries.map((normalizedQuery) => ({
+          query: normalizedQuery,
+          matches: rankMatchesByQuery(candidates, normalizedQuery, DEFAULT_SEARCH_LIMIT),
+        }))
 
         return {
-          content: [{ type: 'text', text: buildQueryCodexOutput(normalizedQuery, matches) }],
+          content: [{ type: 'text', text: buildQueryCodexOutput(queryGroups) }],
         }
       },
     )
@@ -161,7 +197,16 @@ export class CodexMcpAgent extends McpAgent {
       'get-codex-document-enriched',
       {
         title: 'Get Codex Document Enriched',
-        description: 'Expensive fallback tool: browser-rendered enriched markdown with optional chunk query and line-based retrieval. Uses separate rendered cache keys from raw markdown cache.',
+        description: [
+          'LAST RESORT ONLY. Do NOT use this instead of get-codex-documents.',
+          'Use exclusively when a page contains HTML-rendered content that is unreadable as plain markdown,',
+          'for example: icon galleries, component previews, or tables generated by browser-rendered components.',
+          'In 99% of cases get-codex-documents is correct, faster, and more readable.',
+          'Only switch to this tool when the plain markdown content clearly lacks visible data',
+          '(e.g. an icon list shows as empty because icons are rendered via HTML components).',
+          'This tool is expensive: browser-renders the page, caches separately from raw markdown cache.',
+          'Supports optional chunk query, line-based pagination, and linked document expansion.',
+        ].join(' '),
         inputSchema: {
           url: z.string(),
           query: z.string().optional(),
@@ -282,14 +327,16 @@ export class CodexMcpAgent extends McpAgent {
                 type: 'text',
                 text: [
                   'You are querying Cumulocity Codex documentation via MCP.',
+                  '',
                   'Workflow:',
-                  '1) Start with query-codex using keyword terms only (not natural language).',
-                  '2) Review top matches and collect target links with get-codex-links.',
-                  '3) Fetch details with get-codex-documents using those links.',
-                  '4) Do not use section/subsection retrieval; link-level retrieval is the supported flow.',
-                  '5) Use get-codex-document-enriched only as a rare fallback when content appears as HTML components in docs.',
-                  '6) Enrichment is very expensive; avoid it unless needed.',
-                  '7) Example: the full icons list may only be visible through enrichment because it is rendered as an HTML component.',
+                  '1) ALWAYS start with get-codex-structure. It returns the full section/subsection map with all available URLs. Read it carefully — it tells you what exists and where to look before you query or fetch anything.',
+                  '2) Use query-codex with keyword terms only (NOT natural language). Pass MULTIPLE queries at once for different aspects of the same topic, e.g. ["icons", "design system assets"]. Each query is matched independently so do not combine unrelated terms in one query string.',
+                  '3) Review all returned matches. Note ALL listed URLs — do NOT skip subtopic URLs.',
+                  '4) Fetch ALL relevant URLs with get-codex-documents in a single call. Parent topic docs (/topic) do NOT contain subtopic content — each subtopic (/topic/subtopic1, /topic/subtopic2, ...) must be fetched individually.',
+                  '5) Only use get-codex-document-enriched as a LAST RESORT when page content is visibly missing because it is rendered by HTML components in the browser (e.g. icon galleries). In all other cases use get-codex-documents.',
+                  '6) get-codex-document-enriched is expensive. Never use it by default or out of habit.',
+                  '',
+                  'Example: the full icons list may only be visible through enrichment because it is rendered as an HTML component.',
                   normalizedQuestion ? `User question: ${normalizedQuestion}` : 'User question: (provide the current question)',
                 ].join('\n'),
               },

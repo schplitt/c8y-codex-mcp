@@ -18,7 +18,7 @@
   "dependencies": {
     "@cloudflare/playwright": "^1.1.1",
     "@kreuzberg/html-to-markdown-wasm": "^2.25.1",
-    "@modelcontextprotocol/sdk": "^1.26.0",
+    "@modelcontextprotocol/sdk": "1.26.0",
     "agents": "^0.4.1",
     "h3": "1.15.5",
     "markdown-exit": "1.0.0-beta.8",
