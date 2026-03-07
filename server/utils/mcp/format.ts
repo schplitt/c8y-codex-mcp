@@ -80,9 +80,9 @@ export function buildQueryCodexOutput(queries: string[], matches: RankedSearchMa
   }
 
   output += [
-    '> **Important:** Fetch ALL listed URLs with `get-codex-documents`.',
+    '> **Important:** Review the listed URLs and fetch the ones relevant to your task with `get-codex-documents`.',
     'Parent topics (e.g. `/topic`) do NOT contain subtopic content.',
-    'Each subtopic URL (e.g. `/topic/subtopic1`, `/topic/subtopic2`) must be fetched separately.',
+    'If you need a subtopic, fetch that subtopic URL (e.g. `/topic/subtopic1`, `/topic/subtopic2`) directly.',
   ].join(' ')
   output += '\n\n'
 

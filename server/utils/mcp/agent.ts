@@ -99,9 +99,9 @@ export class CodexMcpAgent extends McpAgent {
         description: [
           'Primary retrieval tool. Fetch full raw markdown for one or more URLs at once.',
           'Use after query-codex or get-codex-structure to retrieve discovered URLs.',
-          'ALWAYS fetch ALL returned URLs — do not skip subtopic URLs.',
-          'Parent topic documents (e.g. /topic) do NOT contain content from their subtopics.',
-          'Each subtopic URL (e.g. /topic/subtopic1, /topic/subtopic2) must be fetched individually.',
+          'Choose the returned URLs that are relevant to your task.',
+          'Do NOT assume a parent topic document (e.g. /topic) contains content from its subtopics.',
+          'If you need a subtopic, fetch that specific subtopic URL (e.g. /topic/subtopic1, /topic/subtopic2) explicitly.',
           'This tool is fast and preferred in almost all cases.',
           'Only fall back to get-codex-document-enriched when content is HTML-rendered and unreadable as plain markdown.',
         ].join(' '),
@@ -141,7 +141,8 @@ export class CodexMcpAgent extends McpAgent {
           'Each query is matched independently; results are merged and deduplicated.',
           'Do NOT combine unrelated terms into a single query string — that will match documents containing ALL those terms and miss relevant results.',
           'Results include section, subsection, and subtopic URLs.',
-          'After querying, fetch ALL returned URLs with get-codex-documents — subtopics hold their own content not present in parent docs.',
+          'After querying, inspect the returned URLs and fetch the ones relevant to your task with get-codex-documents.',
+          'If a needed result is a subtopic URL, fetch that URL directly — parent docs do not include subtopic content.',
           'Only use get-codex-document-enriched as a last resort for pages with HTML-rendered content (e.g. icon lists).',
         ].join(' '),
         inputSchema: {
