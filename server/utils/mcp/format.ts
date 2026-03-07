@@ -2,6 +2,11 @@ import type { DocumentEntry, ParsedCodexDocument } from '../c8y/types'
 import { normalizeCodexLinkToMarkdown, toHumanReadableCodexUrl } from '../c8y/links'
 import type { RankedSearchMatch, SearchCandidate } from './search'
 
+interface QueryCodexGroup {
+  query: string
+  matches: RankedSearchMatch[]
+}
+
 function rewriteCodexLinksToMarkdown(content: string): string {
   return content.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (fullMatch, text: string, href: string) => {
     const normalizedMarkdown = normalizeCodexLinkToMarkdown(href)
@@ -70,11 +75,11 @@ function toCandidateLabel(candidate: SearchCandidate): string {
   return candidate.title
 }
 
-export function buildQueryCodexOutput(queries: string[], matches: RankedSearchMatch[]): string {
+export function buildQueryCodexOutput(groups: QueryCodexGroup[]): string {
   let output = '# Query Codex\n\n'
-  output += `- queries: ${queries.join(', ')}\n\n`
+  output += `- queries: ${groups.map(({ query }) => query).join(', ')}\n\n`
 
-  if (matches.length === 0) {
+  if (groups.every(({ matches }) => matches.length === 0)) {
     output += 'No matching section/subsection documents found.\n'
     return output
   }
@@ -86,25 +91,36 @@ export function buildQueryCodexOutput(queries: string[], matches: RankedSearchMa
   ].join(' ')
   output += '\n\n'
 
-  for (const match of matches) {
-    const candidate = match.candidate
+  for (const { query, matches } of groups) {
+    output += `## Query: ${query}\n\n`
 
-    output += `## ${toCandidateLabel(candidate)}\n`
-    output += `- confidence: ${match.confidence}\n`
-    output += `- matchSource: ${match.matchSource}\n`
-    output += `- title: ${candidate.title}\n`
-    output += `- description: ${candidate.description || 'N/A'}\n`
-    if (match.snippet) {
-      output += `- snippet: ${match.snippet}\n`
-    }
-
-    if (candidate.urls.length === 0) {
-      output += '- urls: none\n\n'
+    if (matches.length === 0) {
+      output += 'No matching section/subsection documents found for this query.\n\n'
       continue
     }
 
-    output += '- urls:\n'
-    output += `${candidate.urls.map((url) => `  - ${toHumanReadableCodexUrl(url)}`).join('\n')}\n\n`
+    output += '### Best Matches\n\n'
+
+    for (const match of matches) {
+      const candidate = match.candidate
+
+      output += `#### ${toCandidateLabel(candidate)}\n`
+      output += `- confidence: ${match.confidence}\n`
+      output += `- matchSource: ${match.matchSource}\n`
+      output += `- title: ${candidate.title}\n`
+      output += `- description: ${candidate.description || 'N/A'}\n`
+      if (match.snippet) {
+        output += `- snippet: ${match.snippet}\n`
+      }
+
+      if (candidate.urls.length === 0) {
+        output += '- urls: none\n\n'
+        continue
+      }
+
+      output += '- urls:\n'
+      output += `${candidate.urls.map((url) => `  - ${toHumanReadableCodexUrl(url)}`).join('\n')}\n\n`
+    }
   }
 
   return output

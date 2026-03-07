@@ -16,7 +16,6 @@ import {
 import { chunkMarkdownByHeadings, searchChunks, sliceLines, splitChunksByLines } from '../rendering/chunk'
 import { buildQueryCodexOutput, formatStructureMarkdown, resolveLinkedDocument } from './format'
 import { buildSearchCandidates, collectAllStructureUrls, rankMatchesByQuery } from './search'
-import type { RankedSearchMatch } from './search'
 
 const DEFAULT_SEARCH_LIMIT = 5
 const DEFAULT_QUERY_MAX_LINKED_DOCS = 160
@@ -181,33 +180,13 @@ export class CodexMcpAgent extends McpAgent {
           ...linkedDocuments,
         })
 
-        // Run each query independently and merge by best confidence per candidate
-        const seenKeys = new Map<string, RankedSearchMatch>()
-        for (const normalizedQuery of normalizedQueries) {
-          const matches = rankMatchesByQuery(candidates, normalizedQuery, DEFAULT_SEARCH_LIMIT)
-          for (const match of matches) {
-            const key = `${match.candidate.matchType}\x00${match.candidate.sectionTitle}\x00${match.candidate.title}`
-            const existing = seenKeys.get(key)
-            if (!existing || match.confidence > existing.confidence) {
-              seenKeys.set(key, match)
-            }
-          }
-        }
-
-        const mergedMatches = [...seenKeys.values()].sort((left, right) => {
-          if (right.confidence !== left.confidence) {
-            return right.confidence - left.confidence
-          }
-
-          if (left.candidate.title !== right.candidate.title) {
-            return left.candidate.title.localeCompare(right.candidate.title)
-          }
-
-          return left.candidate.sectionTitle.localeCompare(right.candidate.sectionTitle)
-        })
+        const queryGroups = normalizedQueries.map((normalizedQuery) => ({
+          query: normalizedQuery,
+          matches: rankMatchesByQuery(candidates, normalizedQuery, DEFAULT_SEARCH_LIMIT),
+        }))
 
         return {
-          content: [{ type: 'text', text: buildQueryCodexOutput(normalizedQueries, mergedMatches) }],
+          content: [{ type: 'text', text: buildQueryCodexOutput(queryGroups) }],
         }
       },
     )
