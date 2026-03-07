@@ -73,10 +73,12 @@ describe('buildQueryCodexOutput', () => {
     expect(rendered).toContain('## Query: icons')
     expect(rendered).toContain('## Query: services')
     expect(rendered).toContain('### Best Matches')
-    expect(rendered).toContain('#### Foundations > Icons')
-    expect(rendered).toContain('#### Advanced development > Services > App state service')
+    expect(rendered).toContain('- **Foundations > Icons**')
+    expect(rendered).toContain('- **Advanced development > Services > App state service**')
     expect(rendered).toContain('https://cumulocity.com/codex/foundations/icons')
     expect(rendered).toContain('https://cumulocity.com/codex/advanced-development/services/app-state-service')
+    expect(rendered.match(/## Query:/g)).toHaveLength(2)
+    expect(rendered.match(/### Best Matches/g)).toHaveLength(2)
   })
 
   test('shows an empty-state section for a query with no matches', () => {

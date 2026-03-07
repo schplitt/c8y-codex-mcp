@@ -104,22 +104,22 @@ export function buildQueryCodexOutput(groups: QueryCodexGroup[]): string {
     for (const match of matches) {
       const candidate = match.candidate
 
-      output += `#### ${toCandidateLabel(candidate)}\n`
-      output += `- confidence: ${match.confidence}\n`
-      output += `- matchSource: ${match.matchSource}\n`
-      output += `- title: ${candidate.title}\n`
-      output += `- description: ${candidate.description || 'N/A'}\n`
+      output += `- **${toCandidateLabel(candidate)}**\n`
+      output += `  - confidence: ${match.confidence}\n`
+      output += `  - matchSource: ${match.matchSource}\n`
+      output += `  - title: ${candidate.title}\n`
+      output += `  - description: ${candidate.description || 'N/A'}\n`
       if (match.snippet) {
-        output += `- snippet: ${match.snippet}\n`
+        output += `  - snippet: ${match.snippet}\n`
       }
 
       if (candidate.urls.length === 0) {
-        output += '- urls: none\n\n'
+        output += '  - urls: none\n\n'
         continue
       }
 
-      output += '- urls:\n'
-      output += `${candidate.urls.map((url) => `  - ${toHumanReadableCodexUrl(url)}`).join('\n')}\n\n`
+      output += '  - urls:\n'
+      output += `${candidate.urls.map((url) => `    - ${toHumanReadableCodexUrl(url)}`).join('\n')}\n\n`
     }
   }
 
