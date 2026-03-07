@@ -7,7 +7,13 @@ import type { RankedSearchMatch, SearchCandidate } from './search'
  * multi-query `query-codex` request.
  */
 interface QueryCodexGroup {
+  /**
+   * Normalized input query string.
+   */
   query: string
+  /**
+   * Ranked matches returned for this specific query.
+   */
   matches: RankedSearchMatch[]
 }
 

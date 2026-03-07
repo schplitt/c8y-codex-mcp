@@ -82,6 +82,7 @@ describe('buildQueryCodexOutput', () => {
     expect(rendered.match(/## Query:/g)).toHaveLength(2)
     expect(rendered.match(/### Best Matches/g)).toHaveLength(2)
 
+    // `split` keeps the preamble before the first query heading as element 0.
     const sections = rendered.split(/^## Query: /m)
     expect(sections).toHaveLength(3)
 
