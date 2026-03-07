@@ -2,6 +2,10 @@ import type { DocumentEntry, ParsedCodexDocument } from '../c8y/types'
 import { normalizeCodexLinkToMarkdown, toHumanReadableCodexUrl } from '../c8y/links'
 import type { RankedSearchMatch, SearchCandidate } from './search'
 
+/**
+ * One input query and the ranked matches returned for that query within a
+ * multi-query `query-codex` request.
+ */
 interface QueryCodexGroup {
   query: string
   matches: RankedSearchMatch[]
@@ -107,7 +111,6 @@ export function buildQueryCodexOutput(groups: QueryCodexGroup[]): string {
       output += `- **${toCandidateLabel(candidate)}**\n`
       output += `  - confidence: ${match.confidence}\n`
       output += `  - matchSource: ${match.matchSource}\n`
-      output += `  - title: ${candidate.title}\n`
       output += `  - description: ${candidate.description || 'N/A'}\n`
       if (match.snippet) {
         output += `  - snippet: ${match.snippet}\n`

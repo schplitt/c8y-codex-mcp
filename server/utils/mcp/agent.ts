@@ -180,6 +180,8 @@ export class CodexMcpAgent extends McpAgent {
           ...linkedDocuments,
         })
 
+        // Keep matches grouped per input query so callers can see which keyword set
+        // produced which results instead of interpreting one merged result list.
         const queryGroups = normalizedQueries.map((normalizedQuery) => ({
           query: normalizedQuery,
           matches: rankMatchesByQuery(candidates, normalizedQuery, DEFAULT_SEARCH_LIMIT),
