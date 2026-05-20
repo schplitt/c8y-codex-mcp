@@ -2,7 +2,7 @@
   "name": "c8y-codex-mcp",
   "version": "1.0.0",
   "type": "module",
-  "packageManager": "pnpm@10.26.0",
+  "packageManager": "pnpm@11.1.3",
   "description": "MCP mirror of the official Cumulocity Codex documentation",
   "scripts": {
     "build": "wrangler build",
@@ -16,21 +16,21 @@
     "typegen": "wrangler types"
   },
   "dependencies": {
-    "@cloudflare/playwright": "^1.1.1",
-    "@kreuzberg/html-to-markdown-wasm": "^2.25.1",
+    "@cloudflare/playwright": "^1.3.0",
+    "@kreuzberg/html-to-markdown-wasm": "^3.4.1",
     "@modelcontextprotocol/sdk": "1.26.0",
-    "agents": "^0.4.1",
-    "h3": "1.15.5",
+    "agents": "^0.13.1",
+    "h3": "2.0.1-rc.21",
     "markdown-exit": "1.0.0-beta.8",
     "minisearch": "^7.2.0",
-    "unstorage": "^1.17.4",
-    "zod": "^4.3.6"
+    "unstorage": "^1.17.5",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@schplitt/eslint-config": "^1.3.1",
+    "@schplitt/eslint-config": "^1.5.1",
     "@types/node": "^24.10.13",
-    "eslint": "^10.0.0",
-    "vitest": "^4.0.18",
-    "wrangler": "^4.67.0"
+    "eslint": "^10.4.0",
+    "vitest": "^4.1.7",
+    "wrangler": "^4.93.0"
   }
 }

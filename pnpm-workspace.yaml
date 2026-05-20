@@ -1,6 +1,23 @@
 packages:
   - .
 
+allowBuilds:
+  core-js-pure: true
+  esbuild: true
+  sharp: true
+  workerd: true
+
+minimumReleaseAgeExclude:
+  - '@vitest/expect@4.1.7'
+  - '@vitest/mocker@4.1.7'
+  - '@vitest/pretty-format@4.1.7'
+  - '@vitest/runner@4.1.7'
+  - '@vitest/snapshot@4.1.7'
+  - '@vitest/spy@4.1.7'
+  - '@vitest/utils@4.1.7'
+  - agents@0.13.1
+  - vitest@4.1.7
+
 onlyBuiltDependencies:
   - '@parcel/watcher'
   - esbuild
@@ -10,3 +27,7 @@ onlyBuiltDependencies:
 shellEmulator: true
 
 trustPolicy: no-downgrade
+
+trustPolicyExclude:
+  - cached-factory@0.1.0
+  - semver@6.3.1
