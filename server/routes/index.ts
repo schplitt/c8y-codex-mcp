@@ -1,10 +1,10 @@
-import { eventHandler, getRequestURL } from 'h3'
+import { eventHandler, getRequestURL, html } from 'h3'
 
 export default eventHandler(async (event) => {
   const requestUrl = getRequestURL(event)
   const mcpUrl = new URL('/mcp', requestUrl).toString()
 
-  return `<!doctype html>
+  return html(`<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -72,5 +72,5 @@ export default eventHandler(async (event) => {
   }
 }</code></pre>
   </body>
-</html>`
+</html>`)
 })
