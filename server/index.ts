@@ -6,6 +6,7 @@ import { CodexMcpAgent } from './utils/mcp/agent'
 const app = new H3()
 
 app.get('/', indexRoute)
+app.get('/mcp', () => new Response('Method Not Allowed', { status: 405 }))
 app.all('/mcp', mcpRoute)
 
 export { CodexMcpAgent }
